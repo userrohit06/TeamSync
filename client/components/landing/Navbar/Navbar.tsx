@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Moon, Sparkles, Sun } from "lucide-react";
+import { Menu, Moon, Sparkles, Sun, X } from "lucide-react";
 
 import styles from "./Navbar.module.css";
 import Button from "@/components/common/Button/Button";
@@ -10,11 +10,15 @@ import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
+
   const [mounted, setMounted] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   const Icon = !mounted ? (
     <Moon size={16} />
@@ -39,7 +43,7 @@ const Navbar = () => {
           <span>TeamSync</span>
         </Link>
 
-        {/* Navigation */}
+        {/* Desktop Navigation */}
         <div className={styles.navItems}>
           <Link href="#features" className={styles.navItem}>
             Features
@@ -69,25 +73,80 @@ const Navbar = () => {
             onClick={toggleTheme}
           />
 
-          {/* Login */}
+          {/* Desktop Login */}
           <Link href="/login" className={styles.loginLink}>
             Login
           </Link>
 
-          {/* Get Started */}
+          {/* Desktop CTA */}
           <Link href="/register" className={styles.navCta}>
             Get Started
           </Link>
 
-          {/* Mobile Menu */}
+          {/* Mobile Menu Button */}
           <Button
-            icon={<Menu size={16} />}
+            icon={isMenuOpen ? <X size={16} /> : <Menu size={16} />}
             variant="outline"
             size="small"
-            aria-label="Open navigation menu"
+            aria-label={
+              isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            aria-expanded={isMenuOpen}
             className={styles.mobileMenuButton}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           />
         </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      <div
+        className={`${styles.mobileMenu} ${isMenuOpen ? styles.mobileMenuOpen : styles.mobileMenuClosed}`}
+      >
+        <Link
+          href="#features"
+          className={styles.mobileNavItem}
+          onClick={closeMenu}
+        >
+          Features
+        </Link>
+
+        <Link
+          href="#solutions"
+          className={styles.mobileNavItem}
+          onClick={closeMenu}
+        >
+          How it works
+        </Link>
+
+        <Link
+          href="#benefits"
+          className={styles.mobileNavItem}
+          onClick={closeMenu}
+        >
+          Benefits
+        </Link>
+
+        <Link
+          href="#pricing"
+          className={styles.mobileNavItem}
+          onClick={closeMenu}
+        >
+          Pricing
+        </Link>
+
+        <div className={styles.mobileDivider} />
+
+        <Link
+          href={"/login"}
+          className={styles.mobileLogin}
+          onClick={closeMenu}
+        >
+          Login
+        </Link>
+
+        <Link href="/register" className={styles.mobileCta} onClick={closeMenu}>
+          Get Started
+        </Link>
       </div>
     </nav>
   );
