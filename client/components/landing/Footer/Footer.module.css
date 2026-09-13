@@ -1,0 +1,201 @@
+.footer {
+  border-top: 1px solid var(--border);
+
+  background: var(--surface);
+}
+
+/* =========================
+   Main Footer
+   ========================= */
+
+.footerContainer {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 4rem;
+
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+/* =========================
+   Brand
+   ========================= */
+
+.brandSection {
+  max-width: 300px;
+}
+
+.logo {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+
+  color: var(--text-primary);
+
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.logoIcon {
+  color: var(--primary);
+}
+
+.description {
+  margin-top: 0.9rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.9rem;
+
+  line-height: 1.7;
+}
+
+/* =========================
+   Links
+   ========================= */
+
+.linksSection {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 4rem;
+}
+
+.linkGroup {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.7rem;
+}
+
+.groupTitle {
+  margin-bottom: 0.35rem;
+
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+}
+
+.footerLink {
+  color: var(--text-secondary);
+
+  font-size: 0.85rem;
+
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover {
+  color: var(--primary);
+}
+
+/* =========================
+   Bottom Bar
+   ========================= */
+
+.bottomBar {
+  border-top: 1px solid var(--border);
+}
+
+.bottomBarContainer {
+  min-height: 70px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+}
+
+.copyright {
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
+.socialLinks {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+}
+
+.socialLink {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-md);
+
+  color: var(--text-secondary);
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.socialLink:hover {
+  color: var(--primary);
+
+  border-color: var(--primary);
+
+  background: var(--surface-secondary);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 768px) {
+  .footerContainer {
+    flex-direction: column;
+
+    gap: 3rem;
+
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .brandSection {
+    max-width: 500px;
+  }
+
+  .linksSection {
+    width: 100%;
+
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .linksSection {
+    grid-template-columns: repeat(2, 1fr);
+
+    row-gap: 2rem;
+  }
+
+  .bottomBarContainer {
+    min-height: 90px;
+
+    flex-direction: column;
+
+    justify-content: center;
+  }
+}

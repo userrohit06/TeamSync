@@ -1,0 +1,140 @@
+.ctaSection {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.ctaContent {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 5rem 2rem;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+
+  background:
+    radial-gradient(circle at 50% 0%, var(--glow-primary), transparent 55%),
+    var(--surface);
+
+  text-align: center;
+
+  overflow: hidden;
+}
+
+.badge {
+  margin-bottom: 1rem;
+
+  color: var(--primary);
+
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.title {
+  max-width: 700px;
+
+  color: var(--text-primary);
+
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+
+.description {
+  max-width: 600px;
+
+  margin-top: 1rem;
+
+  color: var(--text-secondary);
+
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+
+  gap: 0.75rem;
+
+  margin-top: 2rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.5rem;
+
+  min-height: 42px;
+
+  padding: 0.7rem 1.2rem;
+
+  border-radius: var(--radius-md);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.primaryButton {
+  border: 1px solid var(--primary);
+
+  background: var(--primary);
+
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  border: 1px solid var(--border);
+
+  background: transparent;
+
+  color: var(--text-primary);
+}
+
+.secondaryButton:hover {
+  border-color: var(--primary);
+
+  color: var(--primary);
+}
+
+@media (max-width: 600px) {
+  .ctaSection {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .ctaContent {
+    padding: 3.5rem 1.5rem;
+  }
+
+  .actions {
+    width: 100%;
+
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}

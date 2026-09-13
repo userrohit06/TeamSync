@@ -1,0 +1,303 @@
+.pricingSection {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+/* =========================
+   Heading
+   ========================= */
+
+.heading {
+  max-width: 700px;
+
+  margin: 0 auto 3.5rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.title {
+  color: var(--text-primary);
+
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.subtitle {
+  max-width: 600px;
+
+  margin-top: 0.75rem;
+
+  color: var(--text-secondary);
+
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  line-height: 1.7;
+}
+
+/* =========================
+   Pricing Grid
+   ========================= */
+
+.pricingGrid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 1.25rem;
+
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  align-items: stretch;
+}
+
+/* =========================
+   Card
+   ========================= */
+
+.card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 2rem;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+
+  border-color: var(--primary);
+
+  box-shadow: 0 8px 30px var(--glow-primary);
+}
+
+/* =========================
+   Popular Plan
+   ========================= */
+
+.popularCard {
+  border-color: var(--primary);
+
+  box-shadow: 0 10px 40px var(--glow-primary);
+}
+
+.popularBadge {
+  position: absolute;
+
+  top: -13px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 0.35rem 0.85rem;
+
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+
+  background: var(--surface);
+
+  color: var(--primary);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* =========================
+   Header
+   ========================= */
+
+.cardHeader {
+  min-height: 105px;
+}
+
+.planName {
+  color: var(--text-primary);
+
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.planDescription {
+  margin-top: 0.5rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* =========================
+   Price
+   ========================= */
+
+.priceWrapper {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 85px;
+
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.price {
+  color: var(--text-primary);
+
+  font-size: 2.25rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.period {
+  margin-top: 0.25rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
+/* =========================
+   Features
+   ========================= */
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.85rem;
+
+  padding: 0;
+
+  margin: 0;
+
+  list-style: none;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 0.65rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.checkIcon {
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  color: var(--primary);
+}
+
+/* =========================
+   Button
+   ========================= */
+
+.planButton {
+  width: 100%;
+
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+
+  border-radius: var(--radius-md);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.primaryButton {
+  border: 1px solid var(--primary);
+
+  background: var(--primary);
+
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  background: var(--primary-hover);
+
+  border-color: var(--primary-hover);
+}
+
+.outlineButton {
+  border: 1px solid var(--border);
+
+  background: transparent;
+
+  color: var(--text-primary);
+}
+
+.outlineButton:hover {
+  border-color: var(--primary);
+
+  color: var(--primary);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 900px) {
+  .pricingGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card:last-child {
+    grid-column: 1 / -1;
+
+    max-width: calc(50% - 0.625rem);
+
+    width: 100%;
+
+    justify-self: center;
+  }
+}
+
+@media (max-width: 650px) {
+  .pricingSection {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .pricingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .card:last-child {
+    grid-column: auto;
+
+    max-width: none;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+}

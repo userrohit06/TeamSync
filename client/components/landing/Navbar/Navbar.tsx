@@ -1,10 +1,35 @@
+"use client";
+
 import Link from "next/link";
-import { Menu, Sparkles, Sun } from "lucide-react";
+import { Menu, Moon, Sparkles, Sun } from "lucide-react";
 
 import styles from "./Navbar.module.css";
 import Button from "@/components/common/Button/Button";
+import { useTheme } from "@/context/ThemeContext/ThemeContext";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
+  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const Icon = !mounted ? (
+    <Moon size={16} />
+  ) : theme === "light" ? (
+    <Moon size={16} />
+  ) : (
+    <Sun size={16} />
+  );
+
+  const AriaLabel = !mounted
+    ? "Toggle theme"
+    : theme === "light"
+      ? "Switch to dark mode"
+      : "Switch to light mode";
+
   return (
     <nav className={styles.navbar}>
       <div className={`${styles.navbarContainer} container`}>
@@ -21,7 +46,11 @@ const Navbar = () => {
           </Link>
 
           <Link href="#solutions" className={styles.navItem}>
-            Solutions
+            How it works
+          </Link>
+
+          <Link href="#benefits" className={styles.navItem}>
+            Benefits
           </Link>
 
           <Link href="#pricing" className={styles.navItem}>
@@ -31,12 +60,13 @@ const Navbar = () => {
 
         {/* Right Side */}
         <div className={styles.rightSideItems}>
-          {/* Theme */}
+          {/* Theme Toggle */}
           <Button
-            icon={<Sun size={16} />}
+            icon={Icon}
             variant="outline"
             size="small"
-            aria-label="Toggle theme"
+            aria-label={AriaLabel}
+            onClick={toggleTheme}
           />
 
           {/* Login */}

@@ -1,0 +1,28 @@
+{
+  "benefits": [
+    {
+      "benefitId": 1,
+      "title": "Stay organized",
+      "description": "Keep projects, tasks, files, and important information together in one structured workspace.",
+      "icon": "FolderKanban"
+    },
+    {
+      "benefitId": 2,
+      "title": "Keep everyone aligned",
+      "description": "Give your team a shared view of work, conversations, updates, and responsibilities.",
+      "icon": "Users"
+    },
+    {
+      "benefitId": 3,
+      "title": "Move faster",
+      "description": "Reduce the time spent switching between different tools and keep your workflow in one place.",
+      "icon": "Zap"
+    },
+    {
+      "benefitId": 4,
+      "title": "Know what's happening",
+      "description": "Track progress and activity across your workspace so important changes never get lost.",
+      "icon": "Activity"
+    }
+  ]
+}

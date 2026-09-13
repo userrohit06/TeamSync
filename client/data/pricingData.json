@@ -1,0 +1,55 @@
+{
+  "plans": [
+    {
+      "planId": 1,
+      "name": "Free",
+      "description": "Everything you need to get started with your team.",
+      "price": "₹0",
+      "period": "forever",
+      "features": [
+        "1 workspace",
+        "Up to 5 team members",
+        "3 projects",
+        "Basic task management",
+        "File sharing"
+      ],
+      "buttonText": "Get Started",
+      "variant": "outline"
+    },
+    {
+      "planId": 2,
+      "name": "Pro",
+      "description": "Powerful collaboration tools for growing teams.",
+      "price": "₹149",
+      "period": "per user / month",
+      "features": [
+        "Unlimited workspaces",
+        "Unlimited team members",
+        "Unlimited projects",
+        "Advanced task management",
+        "File sharing",
+        "Real-time collaboration",
+        "Activity tracking"
+      ],
+      "buttonText": "Start with Pro",
+      "variant": "primary",
+      "popular": true
+    },
+    {
+      "planId": 3,
+      "name": "Business",
+      "description": "Advanced capabilities for larger organizations.",
+      "price": "Custom",
+      "period": "Let's talk",
+      "features": [
+        "Everything in Pro",
+        "Advanced permissions",
+        "Audit activity",
+        "Priority support",
+        "Custom workspace controls"
+      ],
+      "buttonText": "Contact Us",
+      "variant": "outline"
+    }
+  ]
+}

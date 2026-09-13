@@ -11,7 +11,7 @@ const iconMap = {
 
 const Solutions = () => {
   return (
-    <section className={`${styles.solutionsSection} container`}>
+    <section className={`${styles.solutionsSection} container`} id="solutions">
       {/* Section Heading */}
       <div className={styles.heading}>
         <h2 className={styles.title}>Built for the way teams work</h2>

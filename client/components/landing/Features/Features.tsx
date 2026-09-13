@@ -4,7 +4,7 @@ import featuresData from "@/data/featureCardData.json";
 
 const Features = () => {
   return (
-    <div className={`${styles.featureSection} container`}>
+    <div className={`${styles.featureSection} container`} id="features">
       <div className={styles.heading}>
         <div className={styles.line1}>Everything your team needs</div>
 
