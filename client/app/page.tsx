@@ -1,6 +1,7 @@
 import Features from "@/components/landing/Features/Features";
 import Hero from "@/components/landing/Hero/Hero";
 import Navbar from "@/components/landing/Navbar/Navbar";
+import Solutions from "@/components/landing/Solutions/Solutions";
 
 const page = () => {
   return (
@@ -8,6 +9,7 @@ const page = () => {
       <Navbar />
       <Hero />
       <Features />
+      <Solutions />
     </>
   );
 };

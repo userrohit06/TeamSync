@@ -1,0 +1,22 @@
+{
+  "solutions": [
+    {
+      "step": "01",
+      "title": "Plan",
+      "description": "Organize projects, define goals, and give your team a clear view of what needs to be accomplished.",
+      "icon": "LayoutDashboard"
+    },
+    {
+      "step": "02",
+      "title": "Execute",
+      "description": "Turn plans into actionable tasks, assign ownership, set priorities, and track progress from start to finish.",
+      "icon": "ListChecks"
+    },
+    {
+      "step": "03",
+      "title": "Collaborate",
+      "description": "Keep conversations, files, comments, and activity connected to the work so your team always stays aligned.",
+      "icon": "Users"
+    }
+  ]
+}
