@@ -1,0 +1,142 @@
+.main {
+  min-height: calc(100svh - 72px);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.textSection {
+  flex: 1;
+  max-width: 560px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 999px;
+
+  background: var(--surface-secondary);
+  color: var(--primary);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mainHeading {
+  max-width: 550px;
+  color: var(--text-primary);
+
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.04;
+  font-weight: 700;
+}
+
+.secondaryPara {
+  max-width: 500px;
+
+  color: var(--text-secondary);
+
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  margin-top: 0.5rem;
+}
+
+/* =========================
+   Dashboard Preview
+   ========================= */
+
+.dashboardPreview {
+  flex: 1;
+  max-width: 580px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radiu-xl);
+
+  overflow: hidden;
+
+  background: var(--surface);
+  box-shadow: var(--surface-md);
+}
+
+.dashboardPreview img {
+  width: 100%;
+  height: auto;
+}
+
+/* =========================
+   Tablet
+   ========================= */
+
+@media (max-width: 900px) {
+  .main {
+    gap: 2.5rem;
+  }
+
+  .mainHeading {
+    font-size: clamp(2.4rem, 6vw, 3.5rem);
+  }
+}
+
+/* =========================
+   Mobile
+   ========================= */
+
+@media (max-width: 768px) {
+  .main {
+    min-height: calc(100svh - 72px);
+
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 3rem;
+
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .textSection {
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .mainHeading {
+    font-size: clamp(2.4rem, 11vw, 3.2rem);
+  }
+
+  .secondaryPara {
+    max-width: 500px;
+    font-size: 1rem;
+  }
+
+  .actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .dashboardPreview {
+    width: 100%;
+    max-width: 600px;
+  }
+}

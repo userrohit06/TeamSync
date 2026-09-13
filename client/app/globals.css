@@ -1,78 +1,107 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
+/* =========================
+   Light Theme
+   ========================= */
+
 :root {
-  /* Colors - Light Theme */
+  /* Brand */
+  --primary: #0891b2;
+  --primary-hover: #0e7490;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
 
-  --background: #f8fafc;
+  /* Backgrounds */
+  --background: #f7fafc;
   --surface: #ffffff;
-  --surface-secondary: #f1f5f9;
-
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-
-  --border: #e2e8f0;
-
-  --success: #16a34a;
-  --warning: #d97706;
-  --error: #dc2626;
+  --surface-secondary: #f0f9ff;
 
   /* Typography */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
+  /* Borders */
+  --border: #dce7f0;
+
+  /* Semantic */
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #e11d48;
+
+  /* Typography */
   --font-family:
-    "Inter", -apple-system, BlinkmacSystemFont, "Segoe UI", sans-serif;
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* Spacing */
-
+  /* Layout */
   --container-width: 1200px;
 
   /* Radius */
-
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
 
   /* Shadows */
-
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 12px rgba(12, 23, 42, 0.08);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+
+  /* Brand Glow */
+  --glow-primary: rgba(8, 145, 178, 0.14);
+  --glow-accent: rgba(124, 58, 237, 0.12);
 }
 
-/* Dark Theme */
+/* =========================
+   Dark Theme
+   ========================= */
 
 [data-theme="dark"] {
-  --background: #0b1020;
-  --surface: #151c2e;
-  --surface-secondary: #111827;
+  /* Brand */
+  --primary: #22d3ee;
+  --primary-hover: #06b6d4;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
 
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
+  /* Backgrounds */
+  --background: #070b14;
+  --surface: #0f1626;
+  --surface-secondary: #141d31;
 
+  /* Typography */
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  --border: #263148;
+  /* Borders */
+  --border: #1e293b;
 
+  /* Semantic */
   --success: #22c55e;
   --warning: #f59e0b;
-  --error: #f87171;
+  --error: #f43f5e;
 
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+
+  /* Brand Glow */
+  --glow-primary: rgba(34, 211, 238, 0.14);
+  --glow-accent: rgba(139, 92, 246, 0.14);
 }
 
-/* Global reset */
+/* =========================
+   Global Reset
+   ========================= */
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
+/* =========================
+   Base Elements
+   ========================= */
 
 html {
   scroll-behavior: smooth;
@@ -84,12 +113,11 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
 }
-
-/* Basic Elements */
 
 button,
 input,
@@ -112,14 +140,18 @@ img {
   display: block;
 }
 
-/* Reusable Container */
+/* =========================
+   Reusable Container
+   ========================= */
 
 .container {
   width: min(100% - 40px, var(--container-width));
   margin-inline: auto;
 }
 
-/* Utility text styes */
+/* =========================
+   Utility Text Styles
+   ========================= */
 
 .text-primary {
   color: var(--text-primary);
