@@ -1,0 +1,22 @@
+{
+  "features": [
+    {
+      "featureId": 1,
+      "title": "Projects",
+      "description": "Organize your team's work into structured projects, keep related tasks and resources together, and maintain a clear view of everything your team is working toward.",
+      "icon": "FolderKanban"
+    },
+    {
+      "featureId": 2,
+      "title": "Tasks",
+      "description": "Break projects into manageable tasks, assign ownership, track progress, set priorities, and make sure everyone knows what needs to be done next.",
+      "icon": "ListChecks"
+    },
+    {
+      "featureId": 3,
+      "title": "Collaboration",
+      "description": "Keep your team connected with comments, file sharing, activity updates, and real-time collaboration so important conversations and work stay in one place.",
+      "icon": "Users"
+    }
+  ]
+}

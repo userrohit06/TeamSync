@@ -41,7 +41,7 @@
 
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   line-height: 1.05;
-  letter-spacing: -0.04;
+  letter-spacing: -0.04em;
   font-weight: 700;
 }
 
@@ -71,7 +71,7 @@
   max-width: 580px;
 
   border: 1px solid var(--border);
-  border-radius: var(--radiu-xl);
+  border-radius: var(--radius-xl);
 
   overflow: hidden;
 

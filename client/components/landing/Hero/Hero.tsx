@@ -30,10 +30,7 @@ const Hero = () => {
       <div className="dashboardPreview">
         <img
           src={"/landing-page-dashboard-preview.avif"}
-          //   height={900}
-          //   width={900}
           alt="TeamSync dashboard Preview"
-          //   priority
         />
       </div>
     </main>
