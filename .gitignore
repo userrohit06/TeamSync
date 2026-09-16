@@ -1,0 +1,77 @@
+## -----------------------------------------
+## .NET Core / ASP.NET Core Specifics
+## -----------------------------------------
+# Build folders and artifacts
+[Bb]in/
+[Oo]bj/
+[Log]s/
+TestResults/
+
+# User-specific project settings and local overrides
+*.user
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core User Secrets (Keep your local secrets out of source control)
+# Stored globally by default, but if mapped locally:
+.microsoft.dotnet.secretmanager/
+
+# Hot Reload / Roslyn specific caching
+.analyzerdata/
+
+## -----------------------------------------
+## IDEs & Editors (Visual Studio, VS Code, Rider)
+## -----------------------------------------
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.opened
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+## -----------------------------------------
+## Secrets & Environment Configurations
+## -----------------------------------------
+# Local appsettings overrides containing real database strings/API keys
+appsettings.Development.json
+appsettings.Local.json
+
+# If you use dotenv files for configuration strings
+.env
+.env.*
+!.env.example
+
+## -----------------------------------------
+## Dependency Management
+## -----------------------------------------
+# Paket dependency manager
+.paket/
+
+# Node modules (if you bundle a frontend spa or use tailwind/postcss tools)
+node_modules/
+
+## -----------------------------------------
+## Operating Systems
+## -----------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride

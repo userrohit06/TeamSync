@@ -121,6 +121,10 @@
    Mobile Menu
    ========================= */
 
+.mobileMenu {
+  display: none;
+}
+
 .mobileMenuButton {
   display: none !important;
 }
