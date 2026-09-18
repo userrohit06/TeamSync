@@ -1,0 +1,354 @@
+.container {
+  position: fixed;
+  z-index: 9999;
+
+  width: min(calc(100vw - 32px), 420px);
+
+  pointer-events: none;
+}
+
+/* =========================
+   Toast
+   ========================= */
+
+.toast {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  min-height: 68px;
+
+  overflow: hidden;
+
+  padding: 10px 10px 10px 12px;
+
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--surface) 96%, var(--primary) 4%),
+    var(--surface)
+  );
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow:
+    0 14px 35px rgba(15, 23, 42, 0.14),
+    0 4px 10px rgba(15, 23, 42, 0.06);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  pointer-events: auto;
+
+  animation: toastIn 0.2s ease-out;
+}
+
+/* Dark mode */
+
+[data-theme="dark"] .toast {
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.38),
+    0 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+/* =========================
+   Positions
+   ========================= */
+
+.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.top-center {
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.bottom-center {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+/* =========================
+   Left Accent
+   ========================= */
+
+.accent {
+  position: absolute;
+
+  inset: 0 auto 0 0;
+
+  width: 4px;
+
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+
+  background: var(--toast-color);
+}
+
+/* =========================
+   Type Colors
+   ========================= */
+
+.success {
+  --toast-color: var(--success);
+  --toast-glow: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.error {
+  --toast-color: var(--error);
+  --toast-glow: color-mix(in srgb, var(--error) 12%, transparent);
+}
+
+.warning {
+  --toast-color: var(--warning);
+  --toast-glow: color-mix(in srgb, var(--warning) 12%, transparent);
+}
+
+.info {
+  --toast-color: var(--primary);
+  --toast-glow: var(--glow-primary);
+}
+
+.toast::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: linear-gradient(135deg, var(--toast-glow), transparent 55%);
+}
+
+/* =========================
+   Icon
+   ========================= */
+
+.icon {
+  position: relative;
+  z-index: 1;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 22px;
+  height: 22px;
+
+  color: var(--toast-color);
+}
+
+/* =========================
+   Content
+   ========================= */
+
+.content {
+  position: relative;
+  z-index: 1;
+
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.title {
+  margin-bottom: 2px;
+
+  color: var(--text-primary);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.35;
+}
+
+.message {
+  color: var(--text-secondary);
+
+  font-size: 13px;
+
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   Close Button
+   ========================= */
+
+.closeButton {
+  position: relative;
+  z-index: 1;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex-shrink: 0;
+
+  width: 32px !important;
+  height: 32px !important;
+
+  min-width: 32px !important;
+  min-height: 32px !important;
+
+  padding: 0 !important;
+
+  margin-left: 2px;
+
+  border: 1px solid var(--border) !important;
+
+  border-radius: var(--radius-sm) !important;
+
+  background: transparent !important;
+
+  color: var(--text-muted) !important;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.closeButton:hover {
+  background: var(--surface-secondary) !important;
+
+  color: var(--text-primary) !important;
+}
+
+.closeButton:active {
+  transform: scale(0.94);
+}
+
+/* =========================
+   Animation
+   ========================= */
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   Exit Animation
+   ========================= */
+
+.exit {
+  animation: toastOut 0.18s ease-in forwards;
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* =========================
+   Mobile
+   ========================= */
+
+@media (max-width: 640px) {
+  .container {
+    width: calc(100vw - 24px);
+  }
+
+  .top-left,
+  .top-center,
+  .top-right {
+    top: 12px;
+  }
+
+  .bottom-left,
+  .bottom-center,
+  .bottom-right {
+    bottom: 12px;
+  }
+
+  .top-left,
+  .bottom-left {
+    left: 12px;
+  }
+
+  .top-right,
+  .bottom-right {
+    right: 12px;
+  }
+
+  .top-center,
+  .bottom-center {
+    left: 12px;
+    right: 12px;
+
+    transform: none;
+  }
+
+  .toast {
+    min-height: 64px;
+
+    padding: 11px 10px 11px 14px;
+
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 13px;
+  }
+
+  .message {
+    font-size: 12px;
+  }
+
+  .closeButton {
+    width: 30px !important;
+    height: 30px !important;
+
+    min-width: 30px !important;
+    min-height: 30px !important;
+  }
+}

@@ -1,8 +1,12 @@
+"use client";
+
 import Button from "@/components/common/Button/Button";
-import Image from "next/image";
 import styles from "./Hero.module.css";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+  const router = useRouter();
+
   return (
     <main className={`${styles.main} container`}>
       {/* Left section */}
@@ -16,7 +20,11 @@ const Hero = () => {
         </div>
 
         <div className={styles.actions}>
-          <Button variant="primary" size="large">
+          <Button
+            variant="primary"
+            size="large"
+            onClick={() => router.push("/signup")}
+          >
             Get Started
           </Button>
 

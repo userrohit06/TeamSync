@@ -11,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconPosition?: IconPosition;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -20,6 +21,8 @@ const Button = ({
   variant = "primary",
   size = "medium",
   className = "",
+  loading = false,
+  disabled,
   ...props
 }: ButtonProps) => {
   const buttonClassName = [
@@ -32,15 +35,25 @@ const Button = ({
     .join(" ");
 
   return (
-    <button className={buttonClassName} {...props}>
-      {icon && iconPosition === "left" && (
-        <span className={styles.icon}>{icon}</span>
-      )}
+    <button
+      className={buttonClassName}
+      {...props}
+      disabled={disabled || loading}
+    >
+      {loading ? (
+        <span className={styles.loader} aria-hidden="true" />
+      ) : (
+        <>
+          {icon && iconPosition === "left" && (
+            <span className={styles.icon}>{icon}</span>
+          )}
 
-      {children && <span>{children}</span>}
+          {children && <span>{children}</span>}
 
-      {icon && iconPosition === "right" && (
-        <span className={styles.icon}>{icon}</span>
+          {icon && iconPosition === "right" && (
+            <span className={styles.icon}>{icon}</span>
+          )}
+        </>
       )}
     </button>
   );

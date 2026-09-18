@@ -2,6 +2,8 @@ import { ThemeProvider } from "@/context/ThemeContext/ThemeContext";
 import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
+import ReduxProvider from "@/providers/ReduxProvider";
+import ToastProvider from "@/components/common/Toast/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -34,7 +36,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ReduxProvider>
+          <ThemeProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

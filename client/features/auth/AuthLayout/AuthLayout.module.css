@@ -1,0 +1,154 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--background);
+  overflow: hidden;
+}
+
+.backgroundGlow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  top: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, var(--glow-primary) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.container {
+  position: relative;
+
+  width: 100%;
+  max-width: 440px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  color: var(--primary);
+}
+
+.card {
+  width: 100%;
+  padding: 32px;
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.header h1 {
+  margin-bottom: 8px;
+
+  color: var(--text-primary);
+
+  font-size: 1.6rem;
+  font-weight: 700;
+
+  letter-spacing: -0.02em;
+}
+
+.header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.content {
+  width: 100%;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 24px;
+
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.footer a {
+  color: var(--primary);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer a:hover {
+  color: var(--primary-hover);
+}
+
+.backHome {
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
+}
+
+.backHome:hover {
+  color: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+  .page {
+    align-items: flex-start;
+    padding: 32px 16px;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .logo {
+    margin-bottom: 22px;
+  }
+
+  .card {
+    padding: 24px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    text-align: center;
+  }
+}

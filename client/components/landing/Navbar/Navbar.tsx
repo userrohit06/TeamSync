@@ -74,12 +74,12 @@ const Navbar = () => {
           />
 
           {/* Desktop Login */}
-          <Link href="/login" className={styles.loginLink}>
+          <Link href="/signin" className={styles.loginLink}>
             Login
           </Link>
 
           {/* Desktop CTA */}
-          <Link href="/register" className={styles.navCta}>
+          <Link href="/signup" className={styles.navCta}>
             Get Started
           </Link>
 
@@ -137,14 +137,14 @@ const Navbar = () => {
         <div className={styles.mobileDivider} />
 
         <Link
-          href={"/login"}
+          href={"/signin"}
           className={styles.mobileLogin}
           onClick={closeMenu}
         >
           Login
         </Link>
 
-        <Link href="/register" className={styles.mobileCta} onClick={closeMenu}>
+        <Link href="/signup" className={styles.mobileCta} onClick={closeMenu}>
           Get Started
         </Link>
       </div>

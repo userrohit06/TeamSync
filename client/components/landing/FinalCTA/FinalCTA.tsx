@@ -17,7 +17,7 @@ const FinalCTA = () => {
         </p>
 
         <div className={styles.actions}>
-          <Link href="/register" className={styles.primaryButton}>
+          <Link href="/signup" className={styles.primaryButton}>
             Get Started
             <ArrowRight size={18} />
           </Link>

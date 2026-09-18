@@ -1,0 +1,165 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.required {
+  margin-left: 3px;
+  color: var(--error);
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--surface);
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:hover {
+  border-color: var(--text-muted);
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--glow-primary);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background: var(--surface-secondary);
+}
+
+.small {
+  height: 38px;
+  padding: 0 11px;
+  font-size: 0.85rem;
+}
+
+.medium {
+  height: 44px;
+  padding: 0 13px;
+  font-size: 0.9rem;
+}
+
+.large {
+  height: 50px;
+  padding: 0 15px;
+  font-size: 0.95rem;
+}
+
+.hasLeftIcon {
+  padding-left: 42px;
+}
+
+.small.hasLeftIcon {
+  padding-left: 38px;
+}
+
+.large.hasLeftIcon {
+  padding-left: 46px;
+}
+
+.hasRightIcon {
+  padding-right: 44px;
+}
+
+.small.hasRightIcon {
+  padding-right: 40px;
+}
+
+.large.hasRightIcon {
+  padding-right: 46px;
+}
+
+.leftIcon {
+  position: absolute;
+  left: 13px;
+
+  display: flex;
+  align-items: center;
+
+  color: var(--text-muted);
+
+  pointer-events: none;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  color: var(--text-muted);
+
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.passwordToggle:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+}
+
+.inputError {
+  /* The wrapper itself gets this class when an error exists */
+}
+
+.inputError .input {
+  border-color: var(--error);
+}
+
+.inputError .input:focus {
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.12);
+}
+
+.error {
+  font-size: 0.8rem;
+  color: var(--error);
+}

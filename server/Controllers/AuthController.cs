@@ -55,5 +55,12 @@ namespace server.Controllers
 
             return StatusCode(result.Status, result);
         }
+
+        [HttpPost("signin")]
+        public async Task<IActionResult> Signin([FromBody] SigninRequestDTO request, CancellationToken ct)
+        {
+            var result = await this._authService.Signin(request.Email, request.Password, ct);
+            return StatusCode(result.Status, result);
+        }
     }
 }
