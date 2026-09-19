@@ -10,3 +10,7 @@ export interface SigninResponse {
   profilePhotoUrl?: string;
   token: string;
 }
+
+export interface GoogleSigninRequest {
+  idToken: string;
+}

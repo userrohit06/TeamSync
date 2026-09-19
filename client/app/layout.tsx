@@ -4,6 +4,7 @@ import "./globals.css";
 import Script from "next/script";
 import ReduxProvider from "@/providers/ReduxProvider";
 import ToastProvider from "@/components/common/Toast/ToastProvider";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -37,9 +38,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
         <ReduxProvider>
-          <ThemeProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </ThemeProvider>
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_CLIENT_ID!}>
+            <ThemeProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </ThemeProvider>
+          </GoogleOAuthProvider>
         </ReduxProvider>
       </body>
     </html>

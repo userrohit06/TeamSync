@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using server.Configuration;
 using server.Models;
 using server.Repositories.Implementations;
 using server.Repositories.Interfaces;
@@ -83,6 +84,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddHttpContextAccessor();
@@ -92,6 +95,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

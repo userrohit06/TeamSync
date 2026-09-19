@@ -28,4 +28,10 @@ public partial class User
     public bool IsActive { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public string GoogleId { get; set; }
+
+    public string PasswordResetToken { get; set; }
+
+    public DateTime? PasswordResetExpiry { get; set; }
 }

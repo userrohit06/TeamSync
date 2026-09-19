@@ -21,6 +21,10 @@ public partial class TeamSyncContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C81D9518C");
 
+            entity.HasIndex(e => e.GoogleId, "IX_Users_GoogleId")
+                .IsUnique()
+                .HasFilter("([GoogleId] IS NOT NULL)");
+
             entity.HasIndex(e => e.Email, "UQ__Users__A9D10534FBBD622B").IsUnique();
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
@@ -30,10 +34,10 @@ public partial class TeamSyncContext : DbContext
             entity.Property(e => e.FullName)
                 .IsRequired()
                 .HasMaxLength(100);
+            entity.Property(e => e.GoogleId).HasMaxLength(100);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.PasswordHash)
-                .IsRequired()
-                .HasMaxLength(300);
+            entity.Property(e => e.PasswordHash).HasMaxLength(300);
+            entity.Property(e => e.PasswordResetToken).HasMaxLength(200);
             entity.Property(e => e.ProfilePhoto).HasMaxLength(400);
         });
 

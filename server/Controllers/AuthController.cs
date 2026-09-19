@@ -62,5 +62,12 @@ namespace server.Controllers
             var result = await this._authService.Signin(request.Email, request.Password, ct);
             return StatusCode(result.Status, result);
         }
+
+        [HttpPost("google")]
+        public async Task<IActionResult> GoogleSignin([FromBody] GoogleSigninRequestDTO request, CancellationToken ct)
+        {
+            var result = await this._authService.GoogleSignin(request, ct);
+            return StatusCode(result.Status, result);
+        }
     }
 }
