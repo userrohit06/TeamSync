@@ -19,6 +19,18 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[OrganizationMemberRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OrganizationMembers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Organizations]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Users]",
          "ObjectType": 0
       }

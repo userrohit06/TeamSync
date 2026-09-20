@@ -13,10 +13,94 @@ public partial class TeamSyncContext : DbContext
     {
     }
 
+    public virtual DbSet<Organization> Organizations { get; set; }
+
+    public virtual DbSet<OrganizationMember> OrganizationMembers { get; set; }
+
+    public virtual DbSet<OrganizationMemberRole> OrganizationMemberRoles { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Organization>(entity =>
+        {
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Organizations_CreatedAt");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Organizations_IsActive");
+            entity.Property(e => e.IsDeleted).HasAnnotation("Relational:DefaultConstraintName", "DF_Organization_IsDeleted");
+            entity.Property(e => e.LogoUrl).HasMaxLength(500);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.OrganizationCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Organizations_CreatedByUserId");
+
+            entity.HasOne(d => d.DeletedByUser).WithMany(p => p.OrganizationDeletedByUsers)
+                .HasForeignKey(d => d.DeletedByUserId)
+                .HasConstraintName("FK_Organizations_DeletedByUserId");
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.OrganizationUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .HasConstraintName("FK_Organizations_UpdatedByUserId");
+        });
+
+        modelBuilder.Entity<OrganizationMember>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.UserId }, "UQ_OrgMembers_Org_User").IsUnique();
+
+            entity.Property(e => e.JoinedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_OrgMembers_JoinedAt");
+            entity.Property(e => e.MembershipStatus)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasDefaultValue("Active")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_OrgMembers_Status");
+
+            entity.HasOne(d => d.InvitedByUser).WithMany(p => p.OrganizationMemberInvitedByUsers)
+                .HasForeignKey(d => d.InvitedByUserId)
+                .HasConstraintName("FK_OrgMembers_InvitedByUser");
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.OrganizationMembers)
+                .HasForeignKey(d => d.OrganizationId)
+                .HasConstraintName("FK_OrgMembers_Organizations");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.OrganizationMembers)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrgMembers_Roles");
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrganizationMemberUsers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrgMembers_Users");
+        });
+
+        modelBuilder.Entity<OrganizationMemberRole>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("PK__Organiza__8AFACE1ACA82AFAE");
+
+            entity.HasIndex(e => e.RoleName, "UQ_OrgMemRoles_RoleName").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_OrgMemRoles_CreatedAt");
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C81D9518C");

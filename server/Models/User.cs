@@ -34,4 +34,14 @@ public partial class User
     public string PasswordResetToken { get; set; }
 
     public DateTime? PasswordResetExpiry { get; set; }
+
+    public virtual ICollection<Organization> OrganizationCreatedByUsers { get; set; } = new List<Organization>();
+
+    public virtual ICollection<Organization> OrganizationDeletedByUsers { get; set; } = new List<Organization>();
+
+    public virtual ICollection<OrganizationMember> OrganizationMemberInvitedByUsers { get; set; } = new List<OrganizationMember>();
+
+    public virtual ICollection<OrganizationMember> OrganizationMemberUsers { get; set; } = new List<OrganizationMember>();
+
+    public virtual ICollection<Organization> OrganizationUpdatedByUsers { get; set; } = new List<Organization>();
 }
