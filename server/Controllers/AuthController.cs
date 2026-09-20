@@ -11,10 +11,12 @@ namespace server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly string _clientUrl;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IConfiguration config)
         {
             this._authService = authService;
+            this._clientUrl = config["ClientSettings:BaseUrl"]!;
         }
 
         [HttpPost("signup")]
@@ -67,6 +69,21 @@ namespace server.Controllers
         public async Task<IActionResult> GoogleSignin([FromBody] GoogleSigninRequestDTO request, CancellationToken ct)
         {
             var result = await this._authService.GoogleSignin(request, ct);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDTO request, CancellationToken ct)
+        {
+            var result = await this._authService.ForgotPassword(request.email, ct);
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDTO request, CancellationToken ct)
+        {
+            var result = await this._authService.ResetPassword(request, ct);
+
             return StatusCode(result.Status, result);
         }
     }

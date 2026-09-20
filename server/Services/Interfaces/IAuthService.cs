@@ -9,5 +9,7 @@ namespace server.Services.Interfaces
         Task<ApiResponse<SigninResponseDTO>> Signin(string email, string password, CancellationToken ct);
         Task<ApiResponse> ForgotPassword(string email, CancellationToken ct);
         Task<ApiResponse<SigninResponseDTO>> GoogleSignin(GoogleSigninRequestDTO request, CancellationToken ct);
+        Task<ApiResponse> ForgotPassword(string email, string clientUrl, CancellationToken ct);
+        Task<ApiResponse> ResetPassword(ResetPasswordRequestDTO request, CancellationToken ct);
     }
 }

@@ -10,5 +10,6 @@ namespace server.Repositories.Interfaces
         Task AddUser(User user, CancellationToken ct);
         Task<int> Save();
         Task UpdateLastLoginAt(string email, CancellationToken ct);
+        Task<User?> GetByResetToken(string hashedToken);
     }
 }

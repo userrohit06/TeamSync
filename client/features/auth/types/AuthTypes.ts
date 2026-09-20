@@ -14,3 +14,12 @@ export interface SigninResponse {
 export interface GoogleSigninRequest {
   idToken: string;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}

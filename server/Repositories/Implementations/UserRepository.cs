@@ -18,6 +18,11 @@ namespace server.Repositories.Implementations
             await this._dbContext.Users.AddAsync(user, ct);
         }
 
+        public async Task<User?> GetByResetToken(string hashedToken)
+        {
+            return await this._dbContext.Users.FirstOrDefaultAsync(user => user.PasswordResetToken == hashedToken);
+        }
+
         public async Task<User?> GetUserByEmail(string email, CancellationToken ct)
         {
             return await this._dbContext.Users.FirstOrDefaultAsync(
@@ -42,6 +47,7 @@ namespace server.Repositories.Implementations
         public async Task UpdateAsync(User user, CancellationToken ct)
         {
             this._dbContext.Users.Update(user);
+            await this._dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateLastLoginAt(string email, CancellationToken ct)

@@ -6,6 +6,9 @@ using server.Repositories.Interfaces;
 using server.Services.Interfaces;
 using BcryptNet = BCrypt.Net.BCrypt;
 using Google.Apis.Auth;
+using System.Security.Cryptography;
+using System.Text;
+using server.utils;
 
 namespace server.Services.Implementations
 {
@@ -16,19 +19,22 @@ namespace server.Services.Implementations
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly IEmailService _emailService;
 
         public AuthService(
             IUserRepository userRepository,
             IFileStorageService fileStorageService,
             ITokenService tokenService,
             IConfiguration config,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IEmailService emailService)
         {
             this._userRepository = userRepository;
             this._fileStorageService = fileStorageService;
             this._tokenService = tokenService;
             this._config = config;
             this._httpContext = httpContextAccessor;
+            this._emailService = emailService;
         }
 
         private string? ResolveProfilePhotoUrl(string? photoPath)
@@ -294,6 +300,90 @@ namespace server.Services.Implementations
                 response.Message = ex.Message;
                 return response;
             }
+        }
+
+        public async Task<ApiResponse> ForgotPassword(string email, string clientUrl, CancellationToken ct)
+        {
+            var response = new ApiResponse();
+            RandomToken randomToken = new RandomToken();
+
+            // 1. Find user by email
+            var user = await this._userRepository.GetUserByEmail(email, ct);
+
+            if(user == null)
+            {
+                response.Status = 200;
+                response.Message = "Email sent successfully";
+                return response;
+            }
+
+            // 2. Generate a cryptographically secure random token (Raw token)
+            string rawToken = randomToken.GenerateSecureRandomToken();
+
+            // 3. Create a one-way cryptographic hash of that raw token
+            string hashedToken = randomToken.ComputeSha256Hash(rawToken);
+
+            // 4. Update the user record with the hashed token and an expiry time
+            user.PasswordResetToken = hashedToken;
+            user.PasswordResetExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            // 5. Save updates to SQL Server
+            await this._userRepository.UpdateAsync(user, ct);
+
+            // 6. Construct the absolute link sending only the raw token to the frontend
+            var resetLink = $"{clientUrl}/auth/reset-password?token={rawToken}";
+
+            // 7. Fire off the email through Mailkit
+            await this._emailService.SendForgotPasswordEmailAsync(user.Email, user.FullName, resetLink);
+
+            response.Status = 200;
+            response.Message = "Emaiil sent successfully";
+            return response;
+        }
+
+        public async Task<ApiResponse> ResetPassword (ResetPasswordRequestDTO request, CancellationToken ct)
+        {
+            var response = new ApiResponse();
+            RandomToken randomToken = new RandomToken();
+
+            // 1. Hash the incoming raw token from the user's URL request
+            string incomingHashedToken = randomToken.ComputeSha256Hash(request.Token);
+
+            // 2. Fetch the use directly by that hashed token from SQL
+            var user = await this._userRepository.GetByResetToken(incomingHashedToken);
+
+            // 3. Validate that the user exists
+            if(user == null)
+            {
+                response.Status = 404;
+                response.Message = "User not found";
+                return response;
+            }
+
+            // 4. Validate that the token hasn't expired yet
+            bool isPasswordResetTokenValid = !string.IsNullOrEmpty(user.PasswordResetToken) && user.PasswordResetExpiry.HasValue && user.PasswordResetExpiry > DateTime.UtcNow;
+
+            if (!isPasswordResetTokenValid)
+            {
+                response.Status = 400;
+                response.Message = "Invalid token";
+                return response;
+            }
+
+            // 5. Update user's password hash
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            // 6. Cleanup: Invalidate the token immediately so it can never be reused
+            user.PasswordResetToken = null;
+            user.PasswordResetExpiry = null;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // 7. Save changes to the database
+            await this._userRepository.UpdateAsync(user, ct);
+
+            response.Status = 200;
+            response.Message = "Password reset successfully";
+            return response;
         }
     }
 }

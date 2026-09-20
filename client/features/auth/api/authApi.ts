@@ -1,6 +1,8 @@
 import { ApiDataResponse, ApiResponse } from "@/commonTypes/ApiResponse";
 import {
+  ForgotPasswordRequest,
   GoogleSigninRequest,
+  ResetPasswordRequest,
   SigninRequest,
   SigninResponse,
 } from "@/features/auth/types/AuthTypes";
@@ -34,8 +36,29 @@ export const authApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+
+    forgotPassword: builder.mutation<ApiResponse, ForgotPasswordRequest>({
+      query: (payload) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    resetPassword: builder.mutation<ApiResponse, ResetPasswordRequest>({
+      query: (payload) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
-export const { useSignupMutation, useSigninMutation, useGoogleSigninMutation } =
-  authApi;
+export const {
+  useSignupMutation,
+  useSigninMutation,
+  useGoogleSigninMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} = authApi;

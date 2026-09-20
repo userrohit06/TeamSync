@@ -13,6 +13,7 @@ import useToast from "@/components/common/Toast/useToast";
 import { getErrorMessage } from "@/lib/errorHandler";
 import GoogleButton from "@/features/auth/GoogleButton/GoogleButton";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import Link from "next/link";
 
 const Signup = () => {
   const [signin, { isLoading }] = useSigninMutation();
@@ -92,6 +93,26 @@ const Signup = () => {
             autoComplete="new-password"
             inputSize="medium"
           />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: "-12px",
+            marginBottom: "20px",
+          }}
+        >
+          <Link
+            href={"/forgot-password"}
+            style={{
+              fontSize: "14px",
+              color: "var(--primary)",
+              fontWeight: 500,
+            }}
+          >
+            Forgot Password?
+          </Link>
         </div>
 
         {/* Submit */}
