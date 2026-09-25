@@ -1,0 +1,246 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  width: 100%;
+  height: 72px;
+
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbarContainer {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* =========================
+   Logo
+   ========================= */
+
+.logoDiv {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--text-primary);
+
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.logoIcon {
+  color: var(--primary);
+}
+
+/* =========================
+   Navigation
+   ========================= */
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navItem {
+  color: var(--text-secondary);
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: color 0.2s ease;
+}
+
+.navItem:hover {
+  color: var(--text-primary);
+}
+
+/* =========================
+   Right Side
+   ========================= */
+
+.rightSideItems {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* =========================
+   Login
+   ========================= */
+
+.loginLink {
+  color: var(--text-secondary);
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: color 0.2s ease;
+}
+
+.loginLink:hover {
+  color: var(--text-primary);
+}
+
+/* =========================
+   Get Started
+   ========================= */
+
+.navCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 38px;
+  padding: 0 16px;
+
+  border-radius: var(--radius-md);
+
+  background: var(--primary);
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.navCta:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   Mobile Menu
+   ========================= */
+
+.mobileMenu {
+  display: none;
+}
+
+.mobileMenuButton {
+  display: none !important;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 768px) {
+  .navItems,
+  .loginLink,
+  .navCta {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: inline-flex !important;
+  }
+
+  .rightSideItems {
+    gap: 10px;
+  }
+
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+
+    padding: 16px 20px 20px;
+
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+
+    box-shadow: var(--shadow-md);
+
+    z-index: 999;
+
+    transform-origin: top;
+
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  /* Open */
+  .mobileMenuOpen {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Closed */
+  .mobileMenuClosed {
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .mobileNavItem,
+  .mobileLogin,
+  .mobileCta {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .mobileNavItem,
+  .mobileLogin {
+    color: var(--text-secondary);
+  }
+
+  .mobileNavItem:hover,
+  .mobileLogin:hover {
+    background: var(--surface-secondary);
+    color: var(--text-primary);
+  }
+
+  .mobileDivider {
+    height: 1px;
+    margin: 8px 0;
+
+    background: var(--border);
+  }
+
+  .mobileCta {
+    justify-content: center;
+    margin-top: 4px;
+
+    background-color: var(--primary);
+    color: #ffffff;
+
+    font-weight: 600;
+
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .mobileCta:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+}

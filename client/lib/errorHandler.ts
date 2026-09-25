@@ -1,4 +1,4 @@
-import { ApiDataResponse } from "@/commonTypes/ApiResponse";
+import { ApiDataResponse } from "@/types";
 
 interface ValidationErrors {
   [field: string]: string[];
@@ -9,7 +9,7 @@ interface ErrorData {
   [key: string]: unknown;
 }
 
-interface ApiErrorResponse extends ApiDataResponse<ErrorData> {}
+type ApiErrorResponse = ApiDataResponse<ErrorData>;
 
 interface RTKQueryError {
   status?: number | string;

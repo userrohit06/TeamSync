@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Info, TriangleAlert, X, XCircle } from "lucide-react";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import styles from "./Toast.module.css";
 import Button from "@/components/common/Button/Button";
 
@@ -45,6 +45,15 @@ const Toast = ({
 }: ToastProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+
+    // small delay so the exit animation can finish
+    setTimeout(() => {
+      onClose?.();
+    }, 180);
+  }, [onClose]);
+
   useEffect(() => {
     if (duration <= 0) return;
 
@@ -53,16 +62,7 @@ const Toast = ({
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
-
-  function handleClose() {
-    setIsVisible(false);
-
-    // small delay so the exit animation can finish
-    setTimeout(() => {
-      onClose?.();
-    }, 180);
-  }
+  }, [duration, handleClose]);
 
   if (!isVisible) return null;
 

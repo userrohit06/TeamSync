@@ -1,4 +1,5 @@
-export const throttle = <T extends (...args: any[]) => void>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const throttle = <T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
 ) => {
@@ -14,3 +15,5 @@ export const throttle = <T extends (...args: any[]) => void>(
     callback(...args);
   };
 };
+
+export default throttle;

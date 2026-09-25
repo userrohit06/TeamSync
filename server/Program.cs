@@ -91,11 +91,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

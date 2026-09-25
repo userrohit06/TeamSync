@@ -1,12 +1,12 @@
-import { ApiDataResponse, ApiResponse } from "@/commonTypes/ApiResponse";
+import { ApiDataResponse, ApiResponse } from "@/types";
 import {
   ForgotPasswordRequest,
   GoogleSigninRequest,
   ResetPasswordRequest,
   SigninRequest,
   SigninResponse,
-} from "@/features/auth/types/AuthTypes";
-import { baseApi } from "@/redux/api/baseApi";
+} from "../types";
+import { baseApi } from "@/store/api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

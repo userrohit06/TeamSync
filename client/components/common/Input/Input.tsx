@@ -48,7 +48,7 @@ const Input = ({
           {...props}
           id={props.id || props.name}
           type={inputType}
-          className={`${styles.input} ${styles[inputSize]} ${leftIcon ? styles.hasLeftIcon : ""} ${showPasswordToggle && isPassword ? styles.hasRightIcon : ""}`}
+          className={`${styles.input} ${styles[inputSize]} ${leftIcon ? styles.hasLeftIcon : ""} ${showPasswordToggle && isPassword ? styles.hasRightIcon : ""} ${className || ""}`.trim()}
         />
 
         {showPasswordToggle && isPassword && (

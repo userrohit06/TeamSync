@@ -3,9 +3,9 @@
 import { createContext, ReactNode, useCallback, useState } from "react";
 import Toast from "./Toast";
 
-type ToastType = "success" | "error" | "warning" | "info";
+export type ToastType = "success" | "error" | "warning" | "info";
 
-type ToastPosition =
+export type ToastPosition =
   | "top-left"
   | "top-center"
   | "top-right"
@@ -23,7 +23,7 @@ export interface ToastOptions {
   icon?: ReactNode;
 }
 
-interface ToastItem extends ToastOptions {
+export interface ToastItem extends ToastOptions {
   id: number;
 }
 

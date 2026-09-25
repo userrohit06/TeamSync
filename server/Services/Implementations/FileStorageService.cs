@@ -1,4 +1,5 @@
 ﻿using server.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace server.Services.Implementations
 {
@@ -7,11 +8,36 @@ namespace server.Services.Implementations
         private readonly IWebHostEnvironment _env;
         private readonly long _maxFileSize;
         private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public FileStorageService(IWebHostEnvironment env, IConfiguration config)
+        public FileStorageService(IWebHostEnvironment env, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             this._env = env;
             this._maxFileSize = config.GetValue<long>("FileSettings:MaxProfilePhotoSizeInBytes", 5242880);
+            this._httpContextAccessor = httpContextAccessor;
+        }
+
+        public Task DeleteOrganizationLogoAsync(string? fileUrl)
+        {
+            if (string.IsNullOrEmpty(fileUrl)) return Task.CompletedTask;
+
+            try
+            {
+                var uri = new Uri(fileUrl);
+                var relativePath = uri.AbsolutePath.TrimStart('/');
+                var fullPath = Path.Combine(this._env.WebRootPath ?? Directory.GetCurrentDirectory(), relativePath);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+            }
+            catch
+            {
+                // Logging can be done here
+            }
+
+            return Task.CompletedTask;
         }
 
         public async Task<string?> SaveProfilePhotoAsync(IFormFile? file, string email)
@@ -71,5 +97,42 @@ namespace server.Services.Implementations
             return $"/userprofilephoto/{uniqueFileName}";
         }
 
+        public async Task<string?> UploadOrganizationLogoAsync(IFormFile? file, string folderName)
+        {
+            if(file is null || file.Length == 0)
+            {
+                return null;
+            }
+
+            if(file.Length > this._maxFileSize)
+            {
+                throw new ArgumentException($"File size exceeds the maximum allowed limit of {this._maxFileSize / 1024 / 1024}MB.");
+            }
+
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            if (!this._allowedExtensions.Contains(extension))
+            {
+                throw new BadHttpRequestException($"Invalid extension. Allowed extensions are: {string.Join(", ", this._allowedExtensions)}.");
+            }
+
+            // Target: wwwroot/uploads/{folderName}
+            var uploadsFolder = Path.Combine(this._env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", folderName);
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFilename = $"{Guid.NewGuid():N}{extension}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFilename);
+
+            await using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var request = this._httpContextAccessor.HttpContext?.Request;
+            var baseUrl = $"{request?.Scheme}://{request?.Host}";
+            return $"{baseUrl}/uploads/{folderName}/{uniqueFilename}";
+        }
     }
 }

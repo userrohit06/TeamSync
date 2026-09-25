@@ -33,6 +33,22 @@
       {
          "Name": "[dbo].[Users]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[usp_CreateOrganization]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_GetUserOrganizations_Paged]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Organization_SoftDelete]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Organization_Update]",
+         "ObjectType": 1
       }
    ],
    "UiHint": null,
