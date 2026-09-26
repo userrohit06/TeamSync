@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using server.DTOs.Common;
 using server.DTOs.Organization;
+using server.Models;
 using server.Services.Interfaces;
 using System.Security.Claims;
 
@@ -184,6 +185,119 @@ namespace server.Controllers
 
             var result = await this._orgService.GetMembersAsync(organizationId, userId, ct);
             return StatusCode(result.Status, result);
+        }
+
+        [HttpPost("{organizationId:int}/members/invite")]
+        public async Task<IActionResult> AddMember(int organizationId, [FromBody] AddMemberRequestDTO request, CancellationToken ct)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            {
+                return Unauthorized(new ApiResponse
+                {
+                    Status = 401,
+                    Message = "Unauthorized access"
+                });
+            }
+
+            try
+            {
+                var result = await this._orgService.AddMemberAsync(organizationId, request, currentUserId, ct);
+                return StatusCode(result.Status, result);
+            }
+            catch(Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            {
+                return NotFound(new ApiResponse
+                {
+                    Status = 401,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50002)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
+                {
+                    Status = 403,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50003 or 50004 or 50005 or 50006)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = 401,
+                    Message = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = 400,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{organizationId:int}/members/{targetUserId:int}/role")]
+        public async Task<IActionResult> UpdateRole([FromRoute] int organizationId, [FromRoute] int targetUserId, [FromBody] UpdateMemberRoleRequestDTO request, CancellationToken ct)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int callerUserId))
+            {
+                return Unauthorized(new ApiResponse
+                {
+                    Status = 401,
+                    Message = "Unauthorized access"
+                });
+            }
+
+            try
+            {
+                var result = await this._orgService.UpdateMemberRoleAsync(
+                    organizationId,
+                    callerUserId,
+                    targetUserId: targetUserId,
+                    newRoleId: request.RoleId,
+                    ct: ct
+                );
+
+                return StatusCode(result.Status, result);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            {
+                return NotFound(new ApiResponse
+                {
+                    Status = 404,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50004 or 50007 or 50008 or 50009)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
+                {
+                    Status = StatusCodes.Status403Forbidden,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50003 or 50005 or 50006)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = 400,
+                    Message = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = 400,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

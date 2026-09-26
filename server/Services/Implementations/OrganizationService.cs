@@ -17,6 +17,54 @@ namespace server.Services.Implementations
             this._fileStorageService = fileStorageService;
         }
 
+        public async Task<ApiResponse<MemberDetailDTO>> AddMemberAsync(int organizationId, AddMemberRequestDTO request, int callerUserId, CancellationToken ct)
+        {
+            var response = new ApiResponse<MemberDetailDTO>();
+
+            if(organizationId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid organization id";
+                return response;
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                response.Status = 400;
+                response.Message = "Email is required";
+                return response;
+            }
+
+            try
+            {
+                var result = await this._orgRepo.AddorInviteMemberAsync(
+                organizationId,
+                callerUserId,
+                request.Email,
+                request.RoleId,
+                ct
+            );
+
+                if (result == null)
+                {
+                    response.Status = 404;
+                    response.Message = "No record found";
+                    return response;
+                }
+
+                response.Status = 200;
+                response.Message = "Invite sent successfully";
+                response.Data = result;
+                return response;
+            }
+            catch(Exception ex)
+            {
+                response.Status = 500;
+                response.Message = ex.Message;
+                return response;
+            }
+        }
+
         public async Task<ApiResponse<OrganizationResponseDTO>> CreateOrganizationAsync(CreateOrganizationRequestDTO request, int currentUserId, CancellationToken ct)
         {
             var response = new ApiResponse<OrganizationResponseDTO>();
@@ -170,6 +218,52 @@ namespace server.Services.Implementations
 
             response.Status = 200;
             response.Message = "Organization deleted";
+            return response;
+        }
+
+        public async Task<ApiResponse<UpdatedMemberRoleResponseDTO>> UpdateMemberRoleAsync(int organizationId, int callerUserId, int targetUserId, int newRoleId, CancellationToken ct)
+        {
+            var response = new ApiResponse<UpdatedMemberRoleResponseDTO>();
+
+            if (organizationId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid organization ID.";
+                return response;
+            }
+
+            if (targetUserId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid target user ID.";
+                return response;
+            }
+
+            if (newRoleId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid role ID.";
+                return response;
+            }
+
+            var result = await this._orgRepo.UpdateMemberRoleAsync(
+                organizationId,
+                callerUserId,
+                targetUserId,
+                newRoleId,
+                ct
+            );
+
+            if (result == null)
+            {
+                response.Status = 404;
+                response.Message = "No record updated";
+                return response;
+            }
+
+            response.Status = 200;
+            response.Message = "Role update successfully";
+            response.Data = result;
             return response;
         }
 

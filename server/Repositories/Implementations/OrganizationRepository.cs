@@ -21,6 +21,28 @@ namespace server.Repositories.Implementations
             this._config = config;
         }
 
+        public async Task<MemberDetailDTO> AddorInviteMemberAsync(int organizationId, int callerUserId, string email, int roleId, CancellationToken ct)
+        {
+            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
+            using var connection = new SqlConnection(connectionString);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrganizationId", organizationId);
+            parameters.Add("@CallerUserId", callerUserId);
+            parameters.Add("@Email", email);
+            parameters.Add("@RoleId", roleId);
+
+            var command = new CommandDefinition(
+                commandText: "usp_OrganizationMember_AddorInvite",
+                parameters: parameters,
+                commandType: CommandType.Text,
+                cancellationToken: ct
+            );
+
+            var member = await connection.QuerySingleOrDefaultAsync<MemberDetailDTO>(command);
+            return member ?? throw new InvalidOperationException("Failed to add member");
+        }
+
         public async Task<OrganizationResponseDTO> CreateOrganization(string name, string? description, string? logoUrl, int createdByUserId, CancellationToken ct)
         {
             string connectionString = this._config.GetConnectionString("DefaultConnection")!;
@@ -156,6 +178,29 @@ namespace server.Repositories.Implementations
             var result = await connection.ExecuteScalarAsync<int>(command);
 
             return result == 1;
+        }
+
+        public async Task<UpdatedMemberRoleResponseDTO> UpdateMemberRoleAsync(int organizationId, int callerUserId, int targetUserId, int newRoleId, CancellationToken ct)
+        {
+            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
+            using var connection = new SqlConnection(connectionString);
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@OrganizationId", organizationId);
+            parameters.Add("@CallerUserId", callerUserId);
+            parameters.Add("@TargetUserId", targetUserId);
+            parameters.Add("@NewRoleId", newRoleId);
+
+            CommandDefinition command = new CommandDefinition(
+                commandText: "usp_OrganizationMember_UpdateRole",
+                parameters: parameters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            var result = await connection.QuerySingleOrDefaultAsync<UpdatedMemberRoleResponseDTO>(command);
+
+            return result ?? throw new InvalidOperationException("Failed to update member role");
         }
 
         public async Task<UpdateOrganizationDbResult> UpdateOrganizationAsync(int organizationId, int userId, string name, string? description, string? logoUrl, bool updateLogo, CancellationToken ct)
