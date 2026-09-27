@@ -3,6 +3,7 @@
 import { CredentialResponse } from "@react-oauth/google";
 import { useGoogleSigninMutation } from "../api";
 import { throttle } from "@/utils";
+import { AuthUser, setCredentials } from "@/store/slices/authSlice";
 
 export const useGoogleAuth = () => {
   const [googleSignin, { isLoading }] = useGoogleSigninMutation();
@@ -17,7 +18,15 @@ export const useGoogleAuth = () => {
       const result = await googleSignin({
         idToken: response.credential,
       }).unwrap();
-      console.log("Google authentication successful:", result);
+
+      const authUser: AuthUser = {
+        UserId: result.data.userId,
+        FullName: result.data.fullName,
+        Email: result.data.email,
+        ProfilePhoto: result.data.profilePhotoUrl,
+      };
+
+      setCredentials({ user: authUser, token: result.data.token });
     } catch (error) {
       console.error("Google authentication failed:", error);
     }

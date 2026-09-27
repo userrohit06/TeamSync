@@ -9,11 +9,16 @@ import { Button, Input, useToast } from "@/components/common";
 import { useSigninMutation } from "../../api";
 import { useGoogleAuth } from "../../hooks";
 import { getErrorMessage } from "@/lib";
+import { AuthUser, setCredentials } from "@/store/slices/authSlice";
+import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/store";
 
 export const SigninForm = () => {
   const [signin, { isLoading }] = useSigninMutation();
   const { handleGoogleSuccess, handleGoogleError } = useGoogleAuth();
   const { success, error } = useToast();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +30,17 @@ export const SigninForm = () => {
       const payload = { email, password };
       const response = await signin(payload).unwrap();
       success(response.message);
+
+      const authUser: AuthUser = {
+        UserId: response.data.userId,
+        FullName: response.data.fullName,
+        Email: response.data.email,
+        ProfilePhoto: response.data.profilePhotoUrl,
+      };
+
+      dispatch(setCredentials({ user: authUser, token: response.data.token }));
+
+      router.replace("/dashboard");
     } catch (err) {
       const errMsg = getErrorMessage(err);
       error(errMsg);

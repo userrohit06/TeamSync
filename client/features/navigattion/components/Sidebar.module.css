@@ -1,0 +1,569 @@
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100dvh;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+
+  background:
+    radial-gradient(circle at top left, var(--glow-primary), transparent 34%),
+    var(--surface);
+
+  border-right: 1px solid var(--border);
+
+  transition:
+    width 220ms ease,
+    min-width 220ms ease;
+}
+
+.sidebar.collapsed {
+  width: 76px;
+  min-width: 76px;
+}
+
+.sidebarInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px;
+}
+
+.brandRow {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  margin-bottom: 16px;
+}
+
+.brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.brandIcon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-md);
+
+  color: white;
+
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+
+  box-shadow: 0 0 20px var(--glow-primary);
+}
+
+.brandText {
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.collapsed .brand {
+  justify-content: center;
+}
+
+.collapsed .brandText {
+  display: none;
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+
+  color: var(--text-secondary);
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.collapsed .desktopCollapseButton {
+  position: absolute;
+  right: -17px;
+}
+
+.iconButton:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+  border-color: var(--border);
+}
+
+.mobileCloseButton {
+  display: none;
+}
+
+.mobileMenuHeader {
+  display: none;
+}
+
+.navigation {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 0 12px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.navigationSection {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  padding: 0 12px;
+  margin-bottom: 7px;
+
+  color: var(--text-muted);
+
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.collapsed .sectionTitle {
+  font-size: 0;
+  height: 1px;
+  margin: 6px 10px;
+  padding: 0;
+
+  background: var(--border);
+  opacity: 0.6;
+}
+
+.navigationItems,
+.bottomNavigation {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.itemWrapper {
+  width: 100%;
+}
+
+.itemRow {
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  border-radius: var(--radius-md);
+
+  color: var(--text-secondary);
+
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.itemRow:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+}
+
+.itemActive {
+  color: var(--primary);
+
+  background: linear-gradient(90deg, var(--glow-primary), transparent);
+}
+
+.itemLink {
+  min-width: 0;
+  flex: 1;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 0 11px;
+
+  color: inherit;
+  text-decoration: none;
+}
+
+.itemIcon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemLabel {
+  overflow: hidden;
+
+  font-size: 0.85rem;
+  font-weight: 550;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.expandButton {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  color: var(--text-muted);
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.expandButton:hover {
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+.subNavigation {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  margin: 3px 0 5px 21px;
+  padding-left: 14px;
+}
+
+.subNavigation::before {
+  content: "";
+
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+
+  width: 1px;
+
+  background: var(--border);
+}
+
+.subItem {
+  min-height: 36px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 0 10px;
+
+  border-radius: var(--radius-sm);
+
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-decoration: none;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.subItem:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+}
+
+.subItemActive {
+  color: var(--primary);
+  background: var(--surface-secondary);
+}
+
+.subItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottomSection {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.bottomNavigation {
+  padding-bottom: 10px;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 52px;
+  padding: 7px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface-secondary);
+}
+
+.userInfo {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--glow-primary), var(--glow-accent));
+
+  border: 1px solid var(--border);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userDetails {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 0.78rem;
+  font-weight: 650;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  overflow: hidden;
+
+  margin-top: 2px;
+
+  color: var(--text-muted);
+
+  font-size: 0.68rem;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.logoutButton {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  color: var(--text-muted);
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.logoutButton:hover {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 9%, transparent);
+}
+
+.collapsed .userSection {
+  justify-content: center;
+  padding: 7px 5px;
+  flex-direction: column;
+}
+
+.collapsed .userInfo {
+  flex: 0;
+}
+
+.collapsed .userDetails {
+  display: none;
+}
+
+.collapsed .logoutButton span {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    position: relative;
+
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+
+    transition: none;
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .sidebarInner {
+    height: auto;
+    min-height: auto;
+    padding: 10px 12px;
+  }
+
+  .brandRow {
+    margin-bottom: 0;
+  }
+
+  .desktopCollapseButton {
+    display: none;
+  }
+
+  .mobileCloseButton {
+    display: flex;
+  }
+
+  .mobileMenuHeader {
+    display: flex;
+    align-items: center;
+
+    margin-top: 10px;
+    padding: 9px 10px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--text-secondary);
+
+    font-size: 0.76rem;
+    font-weight: 650;
+  }
+
+  .mobileMenuTitle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .mobileClosed .navigation,
+  .mobileClosed .bottomSection,
+  .mobileClosed .mobileMenuHeader {
+    display: none;
+  }
+
+  .mobileOpen .navigation {
+    display: block;
+  }
+
+  .mobileOpen .bottomSection {
+    display: block;
+  }
+
+  .navigation {
+    max-height: none;
+    overflow: visible;
+
+    padding: 8px 0;
+  }
+
+  .navigationSection {
+    margin-bottom: 14px;
+  }
+
+  .sectionTitle {
+    padding-left: 10px;
+  }
+
+  .subNavigation {
+    margin-left: 22px;
+  }
+
+  .bottomSection {
+    margin-top: 0;
+    padding-top: 8px;
+  }
+
+  .userSection {
+    margin-top: 8px;
+  }
+
+  .collapsed .brandText,
+  .collapsed .sectionTitle,
+  .collapsed .itemLabel,
+  .collapsed .userDetails {
+    display: block;
+  }
+
+  .collapsed .sectionTitle {
+    font-size: 0.68rem;
+    height: auto;
+    margin: 0 0 7px;
+    padding: 0 10px;
+
+    background: none;
+  }
+}
