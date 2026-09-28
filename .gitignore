@@ -31,7 +31,6 @@ TestResults/
 *.opened
 
 # Visual Studio Code
-.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -50,8 +49,6 @@ appsettings.Development.json
 appsettings.Local.json
 
 # If you use dotenv files for configuration strings
-.env
-.env.*
 !.env.example
 
 ## -----------------------------------------
@@ -75,3 +72,4 @@ Desktop.ini
 .DS_Store
 .AppleDouble
 .LSOverride
+config.bat

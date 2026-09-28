@@ -2,7 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { useAppSelector } from "@/store/hooks";
 
@@ -69,6 +69,10 @@ const AuthenticatedShell = ({ children }: AuthenticatedShellProps) => {
     });
   };
 
+  const handleCloseMobile = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
+
   if (authChecking || !token) {
     return (
       <div className={styles.loadingScreen}>
@@ -92,7 +96,7 @@ const AuthenticatedShell = ({ children }: AuthenticatedShellProps) => {
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         onToggleCollapsed={handleToggleCollapsed}
-        onCloseMobile={() => setMobileOpen(false)}
+        onCloseMobile={handleCloseMobile}
       />
 
       <div className={styles.mainArea}>
