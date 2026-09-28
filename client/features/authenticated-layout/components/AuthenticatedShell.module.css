@@ -1,15 +1,9 @@
 .shell {
   --sidebar-width: 260px;
-
   min-height: 100dvh;
-
   display: grid;
-  grid-template-columns:
-    var(--sidebar-width)
-    minmax(0, 1fr);
-
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   background: var(--background);
-
   transition: grid-template-columns 220ms ease;
 }
 
@@ -20,42 +14,34 @@
 .mainArea {
   min-width: 0;
   min-height: 100dvh;
-
   display: flex;
   flex-direction: column;
 }
 
 .topbar {
   min-height: 68px;
-
   display: flex;
   align-items: center;
   gap: 14px;
-
   padding: 0 24px;
-
   border-bottom: 1px solid var(--border);
-
   background: color-mix(in srgb, var(--surface) 92%, transparent);
-
   backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .mobileMenuButton {
   display: none;
-
   width: 36px;
   height: 36px;
-
   align-items: center;
   justify-content: center;
-
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-
   color: var(--text-secondary);
   background: var(--surface);
-
   cursor: pointer;
 }
 
@@ -66,11 +52,8 @@
 
 .pageHeading > span {
   display: block;
-
   margin-bottom: 1px;
-
   color: var(--text-muted);
-
   font-size: 0.67rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -78,9 +61,7 @@
 
 .pageHeading h1 {
   margin: 0;
-
   color: var(--text-primary);
-
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -94,20 +75,14 @@
 .topbarAvatar {
   width: 34px;
   height: 34px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
-
   border: 1px solid var(--border);
   border-radius: 50%;
-
   color: var(--text-primary);
-
   background: linear-gradient(135deg, var(--glow-primary), var(--glow-accent));
-
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -121,37 +96,28 @@
 .content {
   flex: 1;
   min-width: 0;
-
   padding: 24px;
 }
 
 .loadingScreen {
   min-height: 100dvh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
-
   color: var(--text-secondary);
-
   background: var(--background);
-
   font-size: 0.85rem;
 }
 
 .loadingOrb {
   width: 30px;
   height: 30px;
-
   border-radius: 50%;
-
   border: 2px solid var(--border);
   border-top-color: var(--primary);
-
   animation: spin 700ms linear infinite;
-
   box-shadow: 0 0 18px var(--glow-primary);
 }
 
@@ -161,28 +127,23 @@
   }
 }
 
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================= */
 @media (max-width: 900px) {
+  /* On mobile/tablet, main area is 100% full width */
   .shell,
   .shell.collapsed {
-    min-height: 100dvh;
-
-    display: flex;
-    flex-direction: column;
-
-    --sidebar-width: 100%;
-  }
-
-  .mainArea {
-    min-height: auto;
-  }
-
-  .topbar {
-    min-height: 62px;
-    padding: 0 14px;
+    display: block;
   }
 
   .mobileMenuButton {
     display: flex;
+  }
+
+  .topbar {
+    min-height: 60px;
+    padding: 0 16px;
   }
 
   .content {
