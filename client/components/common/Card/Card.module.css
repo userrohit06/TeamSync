@@ -1,0 +1,45 @@
+.card {
+  width: 100%;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.card:hover {
+  border-color: color-mix(in srgb, var(--primary) 18%, transparennt);
+
+  box-shadow: var(--shadow-md);
+}
+
+.none {
+  padding: 0;
+}
+
+.small {
+  padding: 14px;
+}
+
+.medium {
+  padding: 20px;
+}
+
+.large {
+  padding: 26px;
+}
+
+@media (max-width: 600px) {
+  .medium {
+    padding: 16px;
+  }
+
+  .large {
+    padding: 20px;
+  }
+}

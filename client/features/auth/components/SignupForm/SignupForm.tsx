@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { ImagePlus, Lock, Mail, User, X } from "lucide-react";
 import { AuthLayout } from "../AuthLayout";
 import { GoogleButton } from "../GoogleButton";
-import { Button, Input, useToast } from "@/components/common";
+import { Button, Input } from "@/components/common";
 import { useSignupMutation } from "../../api";
 import { useGoogleAuth } from "../../hooks";
-import { PROFILE_PHOTO_ALLOWED_TYPES, PROFILE_PHOTO_MAX_SIZE } from "../../constants";
+import {
+  PROFILE_PHOTO_ALLOWED_TYPES,
+  PROFILE_PHOTO_MAX_SIZE,
+} from "../../constants";
 import { getErrorMessage } from "@/lib";
 import styles from "./SignupForm.module.css";
+import { useToast } from "@/hooks";
 
 export const SignupForm = () => {
   const [signup, { isLoading }] = useSignupMutation();

@@ -4,9 +4,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { AuthLayout } from "../AuthLayout";
-import { Button, Input, useToast } from "@/components/common";
+import { Button, Input } from "@/components/common";
 import { useForgotPasswordMutation } from "../../api";
 import { getErrorMessage } from "@/lib";
+import { useToast } from "@/hooks";
 
 export const ForgotPasswordForm = () => {
   const { success, error } = useToast();

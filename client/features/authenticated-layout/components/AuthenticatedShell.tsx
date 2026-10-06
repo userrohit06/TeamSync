@@ -44,7 +44,7 @@ const AuthenticatedShell = ({ children }: AuthenticatedShellProps) => {
 
   useEffect(() => {
     if (!token) {
-      router.replace("/login");
+      router.replace("/signin");
       return;
     }
 

@@ -73,7 +73,7 @@ const Sidebar = ({
 
   const handleLogout = () => {
     dispatch(logout());
-    router.replace("/login");
+    router.replace("/signin");
   };
 
   const getInitials = () => {
