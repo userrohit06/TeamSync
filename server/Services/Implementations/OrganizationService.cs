@@ -120,9 +120,9 @@ namespace server.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<IReadOnlyList<OrganizationMemberResponseDTO>>> GetMembersAsync(int organizationId, int currentUserId, CancellationToken ct)
+        public async Task<ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>> GetMembersAsync(int organizationId, int currentUserId, CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            var response = new ApiResponse<IReadOnlyList<OrganizationMemberResponseDTO>>();
+            var response = new ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>();
 
             if(organizationId <= 0)
             {
@@ -141,14 +141,7 @@ namespace server.Services.Implementations
                 return response;
             }
 
-            var result = await this._orgRepo.GetMembersByOrganizationIdAsync(organizationId, ct);
-
-            if(result == null || !result.Any())
-            {
-                response.Status = 404;
-                response.Message = "No member found";
-                return response;
-            }
+            var result = await this._orgRepo.GetMembersByOrganizationIdAsync(organizationId, filter, ct);
 
             response.Status = 200;
             response.Message = "Members fetched";
@@ -196,6 +189,55 @@ namespace server.Services.Implementations
             return response;
         }
 
+        public async Task<ApiResponse<IReadOnlyList<OrganizationRoleDTO>>> GetRolesAsync(CancellationToken ct, bool excludeOwner = false)
+        {
+            var response = new ApiResponse<IReadOnlyList<OrganizationRoleDTO>>();
+
+            var roles = await this._orgRepo.GetAllRolesAsync(ct);
+
+            IReadOnlyList<OrganizationRoleDTO> updatedRoles = roles;
+
+            if (excludeOwner)
+            {
+                updatedRoles = roles.Where(r => !r.RoleName.Equals("Owner", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            response.Status = 200;
+            response.Message = "Organization roles fetched";
+            response.Data = updatedRoles;
+            return response;
+        }
+
+        public async Task<ApiResponse<bool>> RemoveOrLeaveMemberAsync(int organizationId, int callerUserId, int targetUserId, CancellationToken ct)
+        {
+            var response = new ApiResponse<bool>();
+
+            if(organizationId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid organizationId";
+                return response;
+            }
+
+            if (targetUserId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid targetUserId";
+                return response;
+            }
+
+            await _orgRepo.RemoveOrLeaveMemberAsync(
+                organizationId,
+                callerUserId,
+                targetUserId,
+                ct
+            );
+
+            response.Status = 200;
+            response.Message = "User removed from organization";
+            return response;
+        }
+
         public async Task<ApiResponse> SoftDeleteOrganizationAsync(int organizationId, int currentUserId, CancellationToken ct)
         {
             var response = new ApiResponse();
@@ -218,6 +260,39 @@ namespace server.Services.Implementations
 
             response.Status = 200;
             response.Message = "Organization deleted";
+            return response;
+        }
+
+        public async Task<ApiResponse<TransferOwnershipResponseDTO?>> TransferOwnershipAsync(int organizationId, int currentOwnerUserId, TransferOwnershipRequestDTO request, CancellationToken ct)
+        {
+            var response = new ApiResponse<TransferOwnershipResponseDTO?>();
+
+            if(organizationId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid organization id";
+                return response;
+            }
+
+            if (request.NewOwnerUserId <= 0)
+            {
+                response.Status = 400;
+                response.Message = "Invalid recipient user id";
+                return response;
+            }
+
+            if (currentOwnerUserId == request.NewOwnerUserId)
+            {
+                response.Status = 400;
+                response.Message = "Cannot transfer ownership to yourslef";
+                return response;
+            }
+
+            var result = await this._orgRepo.TransferOwnershipAsync(organizationId, currentOwnerUserId, request.NewOwnerUserId, request.PreviousOwnerNewRoleId, ct);
+
+            response.Status = 200;
+            response.Message = "Ownership transferred successfully";
+            response.Data = result;
             return response;
         }
 
