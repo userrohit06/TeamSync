@@ -62,3 +62,23 @@ export interface UpdateOrganizationResponse {
   currentUserRole: string;
   previousLogoUrl?: string | null;
 }
+
+export interface OrganizationMember {
+  organizationMemberId: number;
+  userId: number;
+  email: string;
+  fullName: string;
+  profilePhotoUrl?: string | null;
+  roleId: number;
+  roleName: string;
+  roleDescription: string;
+  membershipStatus: string;
+  joinedAt: string;
+}
+
+export interface GetOrganizationMembersParams {
+  organizationId: number;
+  pageSize: PageSize;
+  cursor?: string;
+  searchTerm?: string;
+}

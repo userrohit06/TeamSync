@@ -41,8 +41,9 @@ namespace server.Repositories.Interfaces
             int userId,
             CancellationToken ct
         );
-        Task<IReadOnlyList<OrganizationMemberResponseDTO>> GetMembersByOrganizationIdAsync(
+        Task<CursorPagedResult<OrganizationMemberResponseDTO>> GetMembersByOrganizationIdAsync(
             int organizationId,
+            CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
         Task<MemberDetailDTO> AddorInviteMemberAsync(
@@ -59,5 +60,22 @@ namespace server.Repositories.Interfaces
             int newRoleId,
             CancellationToken ct
         );
+
+        Task<bool> RemoveOrLeaveMemberAsync(
+            int organizationId,
+            int callerUserId,
+            int targetUserId,
+            CancellationToken ct
+        );
+
+        Task<TransferOwnershipResponseDTO?> TransferOwnershipAsync(
+            int organizationId,
+            int currentOwnerUserId,
+            int newOwnerUserId,
+            int? previousOwnerRoleId,
+            CancellationToken ct
+        );
+
+        Task<IReadOnlyList<OrganizationRoleDTO>> GetAllRolesAsync(CancellationToken ct);
     }
 }

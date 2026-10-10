@@ -170,7 +170,7 @@ namespace server.Controllers
         }
 
         [HttpGet("{organizationId:int}/members")]
-        public async Task<IActionResult> GetMembers(int organizationId, CancellationToken ct)
+        public async Task<IActionResult> GetMembers(int organizationId, [FromQuery] CursorPaginationFilterDTO filter, CancellationToken ct)
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -183,7 +183,7 @@ namespace server.Controllers
                 });
             }
 
-            var result = await this._orgService.GetMembersAsync(organizationId, userId, ct);
+            var result = await this._orgService.GetMembersAsync(organizationId, userId, filter, ct);
             return StatusCode(result.Status, result);
         }
 
@@ -298,6 +298,109 @@ namespace server.Controllers
                     Message = ex.Message
                 });
             }
+        }
+
+        [HttpDelete("{targetUserId:int}/members/remove")]
+        public async Task<IActionResult> RemoveMember(int organizationId, int targetUserId, CancellationToken ct)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int callerUserId))
+            {
+                return Unauthorized(new ApiResponse
+                {
+                    Status = 401,
+                    Message = "Unauthorized access"
+                });
+            }
+
+            try
+            {
+                var result = await this._orgService.RemoveOrLeaveMemberAsync(
+                    organizationId,
+                    callerUserId,
+                    targetUserId,
+                    ct
+                );
+
+                return StatusCode(result.Status, result);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            {
+                return NotFound(new ApiResponse
+                {
+                    Status = 404,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50006 or 50007 or 50008)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
+                {
+                    Status = StatusCodes.Status403Forbidden,
+                    Message = ex.Message
+                });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50003 or 50004 or 50005)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = 400,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("{id:int}/transfer-ownership")]
+        public async Task<IActionResult> TransferOwnership(int id, [FromBody] TransferOwnershipRequestDTO request, CancellationToken ct)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            {
+                return Unauthorized(new { message = "Invalid token or user ID not found in claims." });
+            }
+
+            try
+            {
+                var result = await this._orgService.TransferOwnershipAsync(id, currentUserId, request, ct);
+                return StatusCode(result.Status, result);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            {
+                return NotFound(new ApiResponse{Status = 404, Message = ex.Message });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50003)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Status = 403, Message = ex.Message });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50004 or 50005)
+            {
+                return BadRequest(new ApiResponse { Status = 400, Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("roles")]
+        public async Task<IActionResult> GetRoles(CancellationToken ct, [FromQuery] bool excludeOwner = false)
+        {
+            var result = await this._orgService.GetRolesAsync(ct, excludeOwner);
+
+            return StatusCode(result.Status, result);
         }
     }
 }

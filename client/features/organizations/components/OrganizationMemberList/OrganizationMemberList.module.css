@@ -1,0 +1,225 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.15s ease;
+  width: fit-content;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.searchInput,
+.pageSizeSelect {
+  padding: 8px 12px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.searchInput {
+  flex: 1;
+  max-width: 380px;
+}
+
+.searchInput:focus,
+.pageSizeSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--glow-primary);
+}
+
+/* User cell */
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.userEmail {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Role styling */
+.roleCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  width: fit-content;
+}
+
+.ownerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--glow-accent);
+  color: var(--accent);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  width: fit-content;
+}
+
+.roleDesc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dateCell {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Pagination bar */
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.statusGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pageInfo {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.fetchingBadge {
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: var(--glow-primary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paginationBtn {
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: var(--surface-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.paginationBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Error card */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.errorContainer h3 {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.errorContainer p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.retryBtn {
+  margin-top: 0.5rem;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.retryBtn:hover {
+  background: var(--primary-hover);
+}

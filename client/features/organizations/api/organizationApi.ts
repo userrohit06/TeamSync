@@ -1,7 +1,9 @@
 import {
   CreateOrganizationRequest,
+  GetOrganizationMembersParams,
   GetOrganizationParams,
   OrganizationDetails,
+  OrganizationMember,
   OrganizationResponse,
   UpdateOrganizationRequest,
   UpdateOrganizationResponse,
@@ -12,7 +14,7 @@ import { ApiDataResponse, ApiResponse, CursorPagedResult } from "@/types";
 
 export const organizationApi = baseApi
   .enhanceEndpoints({
-    addTagTypes: ["Organization"],
+    addTagTypes: ["Organization", "Member"],
   })
   .injectEndpoints({
     endpoints: (builder) => ({
@@ -149,6 +151,41 @@ export const organizationApi = baseApi
           { type: "Organization", id },
         ],
       }),
+
+      getOrganizationMembers: builder.query<
+        ApiDataResponse<CursorPagedResult<OrganizationMember>>,
+        GetOrganizationMembersParams
+      >({
+        query: ({ organizationId, pageSize, cursor, searchTerm }) => {
+          const params = new URLSearchParams();
+
+          params.set("PageSize", pageSize.toString());
+
+          if (cursor) {
+            params.set("Cursor", cursor);
+          }
+
+          if (searchTerm?.trim()) {
+            params.set("SearchTerm", searchTerm.trim());
+          }
+
+          return {
+            url: `/organization/${organizationId}/members?${params.toString()}`,
+            method: "GET",
+          };
+        },
+        providesTags: (result, _error, { organizationId }) => {
+          const members = result?.data.items ?? [];
+
+          return [
+            { type: "Member" as const, id: `ORG_${organizationId}_LIST` },
+            ...members.map((member) => ({
+              type: "Member" as const,
+              id: member.organizationMemberId,
+            })),
+          ];
+        },
+      }),
     }),
   });
 
@@ -159,4 +196,5 @@ export const {
   useGetOrganizationIdQuery,
   useUpdateOrganizationMutation,
   useDeleteOrganizationMutation,
+  useGetOrganizationMembersQuery,
 } = organizationApi;

@@ -31,9 +31,10 @@ namespace server.Services.Interfaces
             int currentUserId,
             CancellationToken ct
         );
-        Task<ApiResponse<IReadOnlyList<OrganizationMemberResponseDTO>>> GetMembersAsync(
+        Task<ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>> GetMembersAsync(
             int organizationId,
             int currentUserId,
+            CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
         Task<ApiResponse<MemberDetailDTO>> AddMemberAsync(
@@ -48,6 +49,25 @@ namespace server.Services.Interfaces
             int targetUserId,
             int newRoleId,
             CancellationToken ct
+        );
+
+        Task<ApiResponse<bool>> RemoveOrLeaveMemberAsync(
+            int organizationId,
+            int callerUserId,
+            int targetUserId,
+            CancellationToken ct
+        );
+
+        Task<ApiResponse<TransferOwnershipResponseDTO?>> TransferOwnershipAsync(
+            int organizationId,
+            int currentOwnerUserId,
+            TransferOwnershipRequestDTO request,
+            CancellationToken ct
+        );
+
+        Task<ApiResponse<IReadOnlyList<OrganizationRoleDTO>>> GetRolesAsync(
+            CancellationToken ct,
+            bool excludeOwner = false
         );
     }
 }

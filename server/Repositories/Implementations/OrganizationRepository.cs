@@ -66,28 +66,52 @@ namespace server.Repositories.Implementations
             return result ?? throw new InvalidOperationException("Failed to create organization");
         }
 
-        public async Task<IReadOnlyList<OrganizationMemberResponseDTO>> GetMembersByOrganizationIdAsync(int organizationId, CancellationToken ct)
+        public async Task<IReadOnlyList<OrganizationRoleDTO>> GetAllRolesAsync(CancellationToken ct)
         {
-            return await this._dbContext.OrganizationMembers
+            return await this._dbContext.OrganizationMemberRoles
                 .AsNoTracking()
-                .Where(om => om.OrganizationId == organizationId
-                    && !om.Organization.IsDeleted
-                    && om.Organization.IsActive)
-                .OrderBy(om => om.Role.RoleId) // Owner and Admin roles come at top
-                .ThenBy(om => om.JoinedAt)
-                .Select(om => new OrganizationMemberResponseDTO
+                .OrderBy(r => r.RoleId)
+                .Select(r => new OrganizationRoleDTO
                 {
-                    OrganizationMemberId = om.OrganizationMemberId,
-                    UserId = om.UserId,
-                    Email = om.User.Email,
-                    FullName = om.User.FullName,
-                    ProfilePhotoUrl = om.User.ProfilePhoto,
-                    RoleId = om.Role.RoleId,
-                    RoleDescription = om.Role.Description,
-                    MembershipStatus = om.MembershipStatus,
-                    JoinedAt = om.JoinedAt
+                    RoleId = r.RoleId,
+                    RoleName = r.RoleName,
+                    Description = r.Description
                 })
-                .ToListAsync();
+                .ToListAsync(ct);
+        }
+
+        public async Task<CursorPagedResult<OrganizationMemberResponseDTO>> GetMembersByOrganizationIdAsync(int organizationId, CursorPaginationFilterDTO filter, CancellationToken ct)
+        {
+            var cursorPayload = CursorHelper.Decode<MemberKeysetCursor>(filter.Cursor);
+
+            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
+            using var connection = new SqlConnection(connectionString);
+
+            var paramters = new DynamicParameters();
+
+            paramters.Add("@OrganizationId", organizationId);
+            paramters.Add("@PageSize", filter.PageSize);
+            paramters.Add("@SearchTerm", filter.SearchTerm);
+            paramters.Add("@LastJoinedAt", cursorPayload?.JoinedAt);
+            paramters.Add("@LastUserId", cursorPayload?.UserId);
+
+            var command = new CommandDefinition(
+                commandText: "usp_GetOrganizationMembers_Paged",
+                parameters: paramters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            // pagesize + 1 is fetched to determine whether another page exists
+            var rawRows = (await connection.QueryAsync<OrganizationMemberResponseDTO>(command)).ToList();
+
+            return CursorPagedResult<OrganizationMemberResponseDTO>.Create(
+                rawItems: rawRows,
+                requestedPageSize: filter.PageSize,
+                cursorSelector: item => CursorHelper.Encode(
+                        new MemberKeysetCursor(item.JoinedAt, item.UserId)
+                    )
+            );
         }
 
         public async Task<OrganizationDetailDTO?> GetOrganizationByIdForUserAsync(int organizationId, int userId, CancellationToken ct)
@@ -159,6 +183,28 @@ namespace server.Repositories.Implementations
                     && !om.Organization.IsDeleted);
         }
 
+        public async Task<bool> RemoveOrLeaveMemberAsync(int organizationId, int callerUserId, int targetUserId, CancellationToken ct)
+        {
+            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
+            using var connection = new SqlConnection(connectionString);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrganizationId", organizationId);
+            parameters.Add("@CallerUserId", callerUserId);
+            parameters.Add("@TargetUserId", targetUserId);
+
+            var command = new CommandDefinition(
+                commandText: "usp_OrganizationMember_RemoveOrLeave",
+                parameters: parameters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            var result = await connection.ExecuteScalarAsync<int>(command);
+
+            return result == 1;
+        }
+
         public async Task<bool> SoftDeleteOrganization(int organizationId, int currentUserId, CancellationToken ct)
         {
             string connectionString = this._config.GetConnectionString("DefaultConnection")!;
@@ -178,6 +224,29 @@ namespace server.Repositories.Implementations
             var result = await connection.ExecuteScalarAsync<int>(command);
 
             return result == 1;
+        }
+
+        public async Task<TransferOwnershipResponseDTO?> TransferOwnershipAsync(int organizationId, int currentOwnerUserId, int newOwnerUserId, int? previousOwnerRoleId, CancellationToken ct)
+        {
+            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
+            using var connection = new SqlConnection(connectionString);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrganizationId", organizationId);
+            parameters.Add("@CurrentOwnerUserId", currentOwnerUserId);
+            parameters.Add("@NewOwnerUserId", newOwnerUserId);
+            parameters.Add("@PreviousOwnerRoleId", previousOwnerRoleId);
+
+            var command = new CommandDefinition(
+                commandText: "usp_Organization_TransferOwnership",
+                parameters: parameters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            var result = await connection.QuerySingleOrDefaultAsync<TransferOwnershipResponseDTO>(command);
+
+            return result ?? throw new InvalidOperationException("Failed to transfer organization ownerhip");
         }
 
         public async Task<UpdatedMemberRoleResponseDTO> UpdateMemberRoleAsync(int organizationId, int callerUserId, int targetUserId, int newRoleId, CancellationToken ct)
