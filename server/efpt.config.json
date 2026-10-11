@@ -35,7 +35,23 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[WorkspaceMembers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkspaceRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Workspaces]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[usp_CreateOrganization]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_GetOrganizationMembers_Paged]",
          "ObjectType": 1
       },
       {
@@ -47,7 +63,23 @@
          "ObjectType": 1
       },
       {
+         "Name": "[dbo].[usp_Organization_TransferOwnership]",
+         "ObjectType": 1
+      },
+      {
          "Name": "[dbo].[usp_Organization_Update]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_OrganizationMember_AddorInvite]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_OrganizationMember_RemoveOrLeave]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_OrganizationMember_UpdateRole]",
          "ObjectType": 1
       }
    ],

@@ -38,4 +38,6 @@ public partial class Organization
     public virtual ICollection<OrganizationMember> OrganizationMembers { get; set; } = new List<OrganizationMember>();
 
     public virtual User UpdatedByUser { get; set; }
+
+    public virtual ICollection<Workspace> Workspaces { get; set; } = new List<Workspace>();
 }

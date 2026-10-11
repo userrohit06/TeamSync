@@ -14,8 +14,13 @@ namespace server.Models
     public partial interface ITeamSyncContextProcedures
     {
         Task<List<usp_CreateOrganizationResult>> usp_CreateOrganizationAsync(string name, string description, string logoUrl, int? createdByUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_GetOrganizationMembers_PagedResult>> usp_GetOrganizationMembers_PagedAsync(int? organizationId, int? pageSize, string searchTerm, DateTime? lastJoinedAt, int? lastUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<usp_GetUserOrganizations_PagedResult>> usp_GetUserOrganizations_PagedAsync(int? userId, int? pageSize, string searchTerm, DateTime? lastJoinedAt, int? lastOrganizationId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<usp_Organization_SoftDeleteResult>> usp_Organization_SoftDeleteAsync(int? organizationId, int? userId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_Organization_TransferOwnershipResult>> usp_Organization_TransferOwnershipAsync(int? organizationId, int? currentOwnerUserId, int? newOwnerUserId, int? previousOwnerRoleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<usp_Organization_UpdateResult>> usp_Organization_UpdateAsync(int? organizationId, int? userId, string name, string description, string logoUrl, bool? updateLogo, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_OrganizationMember_AddorInviteResult>> usp_OrganizationMember_AddorInviteAsync(int? organizationId, int? callerUserId, string targetEmail, int? roleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_OrganizationMember_RemoveOrLeaveResult>> usp_OrganizationMember_RemoveOrLeaveAsync(int? organizationId, int? callerUserId, int? targetUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_OrganizationMember_UpdateRoleResult>> usp_OrganizationMember_UpdateRoleAsync(int? organizationId, int? callerUserId, int? targetUserId, int? newRoleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
     }
 }

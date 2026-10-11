@@ -21,6 +21,12 @@ public partial class TeamSyncContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Workspace> Workspaces { get; set; }
+
+    public virtual DbSet<WorkspaceMember> WorkspaceMembers { get; set; }
+
+    public virtual DbSet<WorkspaceRole> WorkspaceRoles { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Organization>(entity =>
@@ -123,6 +129,101 @@ public partial class TeamSyncContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(300);
             entity.Property(e => e.PasswordResetToken).HasMaxLength(200);
             entity.Property(e => e.ProfilePhoto).HasMaxLength(400);
+        });
+
+        modelBuilder.Entity<Workspace>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.IsDeleted, e.IsActive }, "IX_Workspaces_OrganizationId_IsDeleted");
+
+            entity.HasIndex(e => new { e.OrganizationId, e.Slug }, "UQ_Workspaces_OrganizationId_IsDeleted")
+                .IsUnique()
+                .HasFilter("([IsDeleted]=(0))");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Workspaces_CreatedAt")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Workspaces_IsActive");
+            entity.Property(e => e.IsDeleted).HasAnnotation("Relational:DefaultConstraintName", "DF_Workspaces_IsDeleted");
+            entity.Property(e => e.IsPrivate).HasAnnotation("Relational:DefaultConstraintName", "DF_Workspaces_IsPrivate");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.Slug)
+                .IsRequired()
+                .HasMaxLength(120)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.WorkspaceCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Workspaces_CreatedByUser");
+
+            entity.HasOne(d => d.DeletedByUser).WithMany(p => p.WorkspaceDeletedByUsers)
+                .HasForeignKey(d => d.DeletedByUserId)
+                .HasConstraintName("FK_Workspaces_DeletedByUser");
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.Workspaces)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Workspaces_Organizations");
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.WorkspaceUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .HasConstraintName("FK_Workspaces_UpdatedByUser");
+        });
+
+        modelBuilder.Entity<WorkspaceMember>(entity =>
+        {
+            entity.HasIndex(e => e.UserId, "IX_WorkspaceMembers_UserId");
+
+            entity.HasIndex(e => new { e.WorkspaceId, e.UserId }, "UQ_WorkspaceMembers_WorkspaceId_UserId").IsUnique();
+
+            entity.Property(e => e.JoinedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_WorkspaceMembers_JoinedAt");
+
+            entity.HasOne(d => d.AddedByUser).WithMany(p => p.WorkspaceMemberAddedByUsers)
+                .HasForeignKey(d => d.AddedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkspaceMembers_AddedByUser");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.WorkspaceMembers)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkspaceMembers_Roles");
+
+            entity.HasOne(d => d.User).WithMany(p => p.WorkspaceMemberUsers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkspaceMembers_Users");
+
+            entity.HasOne(d => d.Workspace).WithMany(p => p.WorkspaceMembers)
+                .HasForeignKey(d => d.WorkspaceId)
+                .HasConstraintName("FK_WorkspaceMembers_Workspaces");
+        });
+
+        modelBuilder.Entity<WorkspaceRole>(entity =>
+        {
+            entity.HasKey(e => e.RoleId);
+
+            entity.HasIndex(e => e.RoleName, "UQ_WorkspaceRoles_RoleName").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_WorkspaceRoles_CreatedAt")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(250);
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

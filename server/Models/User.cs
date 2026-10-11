@@ -44,4 +44,14 @@ public partial class User
     public virtual ICollection<OrganizationMember> OrganizationMemberUsers { get; set; } = new List<OrganizationMember>();
 
     public virtual ICollection<Organization> OrganizationUpdatedByUsers { get; set; } = new List<Organization>();
+
+    public virtual ICollection<Workspace> WorkspaceCreatedByUsers { get; set; } = new List<Workspace>();
+
+    public virtual ICollection<Workspace> WorkspaceDeletedByUsers { get; set; } = new List<Workspace>();
+
+    public virtual ICollection<WorkspaceMember> WorkspaceMemberAddedByUsers { get; set; } = new List<WorkspaceMember>();
+
+    public virtual ICollection<WorkspaceMember> WorkspaceMemberUsers { get; set; } = new List<WorkspaceMember>();
+
+    public virtual ICollection<Workspace> WorkspaceUpdatedByUsers { get; set; } = new List<Workspace>();
 }
