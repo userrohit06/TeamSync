@@ -1,4 +1,5 @@
-﻿using server.DTOs.Workspace;
+﻿using server.DTOs.Common;
+using server.DTOs.Workspace;
 
 namespace server.Repositories.Interfaces
 {
@@ -11,6 +12,13 @@ namespace server.Repositories.Interfaces
             string? description,
             bool isPrivate,
             string baseSlug,
+            CancellationToken ct
+        );
+
+        Task<CursorPagedResult<WorkspaceResponseDTO>> GetWorkspacesCursorPagedAsync(
+            int organizationId,
+            int callerUserId,
+            CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
     }

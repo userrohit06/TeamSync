@@ -2,13 +2,25 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Mail, ShieldCheck, UserPlus } from "lucide-react";
+import {
+  ArrowLeft,
+  Crown,
+  Mail,
+  ShieldCheck,
+  UserCog,
+  UserMinus,
+  UserPlus,
+} from "lucide-react";
 
 import Avatar from "@/components/common/Avatar";
 import Button from "@/components/common/Button";
 import PageHeader from "@/components/common/PageHeader";
 import StatusBadge from "@/components/common/StatusBadge";
-import { useGetOrganizationMembersQuery } from "@/features/organizations/api/organizationApi";
+import {
+  useGetOrganizationIdQuery,
+  useGetOrganizationMembersQuery,
+  useRemoveMemberMutation,
+} from "@/features/organizations/api/organizationApi";
 
 import styles from "./OrganizationMemberList.module.css";
 import { PageSize } from "@/types";
@@ -16,6 +28,13 @@ import DataTable, {
   DataTableColumn,
 } from "@/components/common/DataTable/DataTable";
 import { OrganizationMember } from "@/features/organizations/types/organization.types";
+import { AddMemberDialog } from "@/features/organizations/components/AddMemberDialog/AddMemberDialog";
+import { UpdateMemberRoleDialog } from "@/features/organizations/components/UpdateMemberRoleDialog/UpdateMemberRoleDialog";
+import { useToast } from "@/hooks";
+import { useAppSelector } from "@/store";
+import { getErrorMessage } from "@/lib";
+import { ConfirmDialog } from "@/components";
+import { TransferOwnershipDialog } from "@/features/organizations/components/TransferOwnershipDialog/TransferOwnershipDialog";
 
 const PAGE_SIZE_OPTIONS: PageSize[] = [10, 20, 50, 100];
 
@@ -26,6 +45,11 @@ interface OrganizationMemberListProps {
 export const OrganizationMemberList = ({
   organizationId,
 }: OrganizationMemberListProps) => {
+  const { success: toastSuccess, error: toastError } = useToast();
+  const currentLoggedInUserId = useAppSelector(
+    (state) => state.auth.user?.UserId,
+  );
+
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [currentCursor, setCurrentCursor] = useState<string | undefined>(
     undefined,
@@ -34,6 +58,13 @@ export const OrganizationMemberList = ({
     [],
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [selectedMemberForRole, setSelectedMemberForRole] =
+    useState<OrganizationMember | null>(null);
+  const [memberToRemove, setMemberToRemove] =
+    useState<OrganizationMember | null>(null);
+  const [memberForOwnershipTransfer, setMemberForOwnershipTransfer] =
+    useState<OrganizationMember | null>(null);
 
   const { data, isLoading, isFetching, error, refetch } =
     useGetOrganizationMembersQuery({
@@ -42,6 +73,14 @@ export const OrganizationMemberList = ({
       cursor: currentCursor,
       searchTerm: searchTerm.trim() || undefined,
     });
+
+  const [removeMember, { isLoading: isRemoving }] = useRemoveMemberMutation();
+
+  const { data: orgData } = useGetOrganizationIdQuery(organizationId);
+  const currentUserRole = orgData?.data.currentUserRole.toLowerCase();
+  const canManageMembers =
+    currentUserRole === "owner" || currentUserRole === "admin";
+  const isOwner = currentUserRole === "owner";
 
   const pagedResult = data?.data;
   const members = pagedResult?.items ?? [];
@@ -73,6 +112,23 @@ export const OrganizationMemberList = ({
     setPageSize(newSize);
     setCurrentCursor(undefined);
     setCursorHistory([]);
+  };
+
+  const handleCofirmRemove = async () => {
+    if (!memberToRemove) return;
+
+    try {
+      await removeMember({
+        organizationId,
+        targetUserId: memberToRemove.userId,
+      }).unwrap();
+
+      toastSuccess(`${memberToRemove.fullName} removed from organization`);
+      setMemberToRemove(null);
+    } catch (error) {
+      const msg = getErrorMessage(error);
+      toastError(msg);
+    }
   };
 
   const columns: DataTableColumn<OrganizationMember>[] = useMemo(
@@ -144,8 +200,80 @@ export const OrganizationMemberList = ({
           </span>
         ),
       },
+      {
+        key: "actions",
+        header: "Actions",
+        align: "right",
+        render: (row) => {
+          const isTargetOwner = row.roleName.toLowerCase() === "owner";
+          const isTargetAdmin = row.roleName.toLowerCase() === "admin";
+          const isCurrentUserOwner = currentUserRole === "owner";
+          const isCurrentUserAdmin = currentUserRole === "admin";
+
+          // 1. Transfer ownership:
+          // Only visible to owner of the organization, and on rows where target is NOT owner
+          const canTransfer = isCurrentUserOwner && !isTargetOwner;
+
+          // 2. Change role:
+          // - If current user is Owner: show on every row except owner
+          // - If current user is Admin: show on every row except owner and admin
+          const canChangeRole =
+            (isCurrentUserOwner && !isTargetOwner) ||
+            (isCurrentUserAdmin && !isTargetOwner && !isTargetAdmin);
+
+          // 3. Remove:
+          // Same conditions as Change Role
+          const canRemove = canChangeRole;
+
+          // If no action applies to this row, render nothing
+          if (!canTransfer && !canChangeRole && !canRemove) return null;
+
+          return (
+            <div
+              className={styles.actionRow}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {canTransfer && (
+                <button
+                  type="button"
+                  className={`${styles.actionBtn} ${styles.transferActionBtn}`}
+                  onClick={() => setMemberForOwnershipTransfer(row)}
+                  title="Transfer Ownership"
+                >
+                  <Crown size={15} />
+                  <span>Transfer</span>
+                </button>
+              )}
+
+              {canChangeRole && (
+                <button
+                  type="button"
+                  className={styles.actionBtn}
+                  onClick={() => setSelectedMemberForRole(row)}
+                  title="Change Role"
+                >
+                  <UserCog size={15} />
+                  <span>Change Role</span>
+                </button>
+              )}
+
+              {canRemove && (
+                <button
+                  type="button"
+                  className={`${styles.actionBtn} ${styles.removeActionBtn}`}
+                  onClick={() => setMemberToRemove(row)}
+                  title="Remove Member"
+                >
+                  <UserMinus size={15} />
+                  <span>Remove</span>
+                </button>
+              )}
+            </div>
+          );
+        },
+      },
     ],
-    [],
+    [canManageMembers, currentLoggedInUserId],
   );
 
   if (error) {
@@ -177,7 +305,11 @@ export const OrganizationMemberList = ({
         title="Organization Members"
         description="View and oversee users collaborating in this organization"
         action={
-          <Button variant="primary" size="medium">
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={() => setIsAddMemberOpen(true)}
+          >
             <UserPlus size={16} /> Invite Member
           </Button>
         }
@@ -251,6 +383,36 @@ export const OrganizationMemberList = ({
           </div>
         </div>
       )}
+
+      <AddMemberDialog
+        isOpen={isAddMemberOpen}
+        onClose={() => setIsAddMemberOpen(false)}
+        organizationId={organizationId}
+      />
+
+      <UpdateMemberRoleDialog
+        isOpen={Boolean(selectedMemberForRole)}
+        onClose={() => setSelectedMemberForRole(null)}
+        organizationId={organizationId}
+        member={selectedMemberForRole}
+      />
+
+      <ConfirmDialog
+        open={Boolean(memberToRemove)}
+        onClose={() => setMemberToRemove(null)}
+        onConfirm={handleCofirmRemove}
+        title="Remove Member"
+        description={`Are you sure want to remove ${memberToRemove?.fullName} (${memberToRemove?.email}) from this organization? They will immediately lose all workspace access.`}
+        variant="danger"
+        loading={isRemoving}
+      />
+
+      <TransferOwnershipDialog
+        isOpen={Boolean(memberForOwnershipTransfer)}
+        onClose={() => setMemberForOwnershipTransfer(null)}
+        organizationId={organizationId}
+        targetMember={memberForOwnershipTransfer}
+      />
     </div>
   );
 };

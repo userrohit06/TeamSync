@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace server.DTOs.Organization
 {
@@ -6,10 +6,10 @@ namespace server.DTOs.Organization
     {
         [Required(ErrorMessage = "Email is required of the user you want to invite")]
         [EmailAddress(ErrorMessage = "Enter valid email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Provide a valid role")]
-        [Range(1, int.MaxValue)]
+        [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive integer")]
         public int RoleId { get; set; }
     }
 }
