@@ -4,7 +4,7 @@ import { Button, Dialog, Input } from "@/components";
 import { useCreateOrganizationMutation } from "@/features/organizations/api/organizationApi";
 import { useToast } from "@/hooks";
 import { getErrorMessage } from "@/lib";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, useRef, useState } from "react";
 import styles from "./CreateOrganizationDialog.module.css";
 import { Upload } from "lucide-react";
 

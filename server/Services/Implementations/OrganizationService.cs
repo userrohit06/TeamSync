@@ -1,4 +1,4 @@
-﻿using server.DTOs.Common;
+using server.DTOs.Common;
 using server.DTOs.Organization;
 using server.Repositories.Interfaces;
 using server.Services.Interfaces;
@@ -10,82 +10,59 @@ namespace server.Services.Implementations
         private readonly IOrganizationRepository _orgRepo;
         private readonly IFileStorageService _fileStorageService;
 
-        public OrganizationService(IOrganizationRepository organizationRepository,
+        public OrganizationService(
+            IOrganizationRepository organizationRepository,
             IFileStorageService fileStorageService)
         {
-            this._orgRepo = organizationRepository;
-            this._fileStorageService = fileStorageService;
+            _orgRepo = organizationRepository;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<ApiResponse<MemberDetailDTO>> AddMemberAsync(int organizationId, AddMemberRequestDTO request, int callerUserId, CancellationToken ct)
         {
-            var response = new ApiResponse<MemberDetailDTO>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse<MemberDetailDTO>.Error("Invalid organization id", 400);
             }
 
             if (string.IsNullOrWhiteSpace(request.Email))
             {
-                response.Status = 400;
-                response.Message = "Email is required";
-                return response;
+                return ApiResponse<MemberDetailDTO>.Error("Email is required", 400);
             }
 
-            try
-            {
-                var result = await this._orgRepo.AddorInviteMemberAsync(
+            var result = await _orgRepo.AddorInviteMemberAsync(
                 organizationId,
                 callerUserId,
-                request.Email,
+                request.Email.Trim(),
                 request.RoleId,
                 ct
             );
 
-                if (result == null)
-                {
-                    response.Status = 404;
-                    response.Message = "No record found";
-                    return response;
-                }
-
-                response.Status = 200;
-                response.Message = "Invite sent successfully";
-                response.Data = result;
-                return response;
-            }
-            catch(Exception ex)
+            if (result == null)
             {
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
+                return ApiResponse<MemberDetailDTO>.Error("No record found", 404);
             }
+
+            return ApiResponse<MemberDetailDTO>.Success(result, "Invite sent successfully", 200);
         }
 
         public async Task<ApiResponse<OrganizationResponseDTO>> CreateOrganizationAsync(CreateOrganizationRequestDTO request, int currentUserId, CancellationToken ct)
         {
-            var response = new ApiResponse<OrganizationResponseDTO>();
-
-            if (string.IsNullOrEmpty(request.Name))
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
-                response.Status = 400;
-                response.Message = "Organization name is required";
-                return response;
+                return ApiResponse<OrganizationResponseDTO>.Error("Organization name is required", 400);
             }
 
             string? uploadedLogoUrl = null;
 
             try
             {
-                if(request.LogoFile is not null)
+                if (request.LogoFile is not null)
                 {
-                    uploadedLogoUrl = await this._fileStorageService.UploadOrganizationLogoAsync(request.LogoFile, "logos");
+                    uploadedLogoUrl = await _fileStorageService.UploadOrganizationLogoAsync(request.LogoFile, "logos");
                 }
 
-                var organization = await this._orgRepo.CreateOrganization(
+                var organization = await _orgRepo.CreateOrganization(
                     request.Name.Trim(),
                     request.Description?.Trim(),
                     uploadedLogoUrl,
@@ -93,9 +70,7 @@ namespace server.Services.Implementations
                     ct
                 );
 
-                response.Status = 201;
-                response.Message = "Organization created successfully";
-                response.Data = new OrganizationResponseDTO
+                var responseData = new OrganizationResponseDTO
                 {
                     OrganizationId = organization.OrganizationId,
                     Name = organization.Name,
@@ -104,126 +79,85 @@ namespace server.Services.Implementations
                     CreatedAt = organization.CreatedAt,
                     CurrentUserRole = organization.CurrentUserRole
                 };
-                return response;
+
+                return ApiResponse<OrganizationResponseDTO>.Success(responseData, "Organization created successfully", 201);
             }
-            catch(Exception ex)
+            catch
             {
-                // rollback uploaded file if DB call fails
+                // Rollback uploaded file if DB call fails
                 if (!string.IsNullOrEmpty(uploadedLogoUrl))
                 {
-                    await this._fileStorageService.DeleteOrganizationLogoAsync(uploadedLogoUrl);
+                    await _fileStorageService.DeleteOrganizationLogoAsync(uploadedLogoUrl);
                 }
-
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
+                throw;
             }
         }
 
         public async Task<ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>> GetMembersAsync(int organizationId, int currentUserId, CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            var response = new ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>.Error("Invalid organization id", 400);
             }
 
             // Enforce tenant boundary: caller must belong to this organization
-            bool hasAccess = await this._orgRepo.IsUserActiveMemberAsync(organizationId, currentUserId, ct);
+            bool hasAccess = await _orgRepo.IsUserActiveMemberAsync(organizationId, currentUserId, ct);
 
             if (!hasAccess)
             {
-                response.Status = 401;
-                response.Message = "You are not authorized to access this organization";
-                return response;
+                return ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>.Error("You are not authorized to access this organization", 403);
             }
 
-            var result = await this._orgRepo.GetMembersByOrganizationIdAsync(organizationId, filter, ct);
-
-            response.Status = 200;
-            response.Message = "Members fetched";
-            response.Data = result;
-            return response;
+            var result = await _orgRepo.GetMembersByOrganizationIdAsync(organizationId, filter, ct);
+            return ApiResponse<CursorPagedResult<OrganizationMemberResponseDTO>>.Success(result, "Members fetched successfully", 200);
         }
 
         public async Task<ApiResponse<OrganizationDetailDTO?>> GetOrganizationByIdAsync(int organizationId, int currentUserId, CancellationToken ct)
         {
-            var response = new ApiResponse<OrganizationDetailDTO?>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                response.Data = null;
-                return response;
+                return ApiResponse<OrganizationDetailDTO?>.Error("Invalid organization id", 400);
             }
 
-            var result = await this._orgRepo.GetOrganizationByIdForUserAsync(organizationId, currentUserId, ct);
+            var result = await _orgRepo.GetOrganizationByIdForUserAsync(organizationId, currentUserId, ct);
 
-            if(result == null)
+            if (result == null)
             {
-                response.Status = 404;
-                response.Message = "No organization found";
-                response.Data = null;
-                return response;
+                return ApiResponse<OrganizationDetailDTO?>.Error("No organization found", 404);
             }
 
-            response.Status = 200;
-            response.Message = "Organization fetched";
-            response.Data = result;
-            return response;
+            return ApiResponse<OrganizationDetailDTO?>.Success(result, "Organization fetched successfully", 200);
         }
 
         public async Task<ApiResponse<CursorPagedResult<UserOrganizationDTO>>> GetOrganizationsAsync(int currentUserId, CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            var response = new ApiResponse<CursorPagedResult<UserOrganizationDTO>>();
-
-            var result = await this._orgRepo.GetUserOrganizationsCursorPagedAsync(currentUserId, filter, ct);
-
-            response.Status = 200;
-            response.Message = "Organizations fetched";
-            response.Data = result;
-            return response;
+            var result = await _orgRepo.GetUserOrganizationsCursorPagedAsync(currentUserId, filter, ct);
+            return ApiResponse<CursorPagedResult<UserOrganizationDTO>>.Success(result, "Organizations fetched successfully", 200);
         }
 
         public async Task<ApiResponse<IReadOnlyList<OrganizationRoleDTO>>> GetRolesAsync(CancellationToken ct, bool excludeOwner = false)
         {
-            var response = new ApiResponse<IReadOnlyList<OrganizationRoleDTO>>();
-
-            var roles = await this._orgRepo.GetAllRolesAsync(ct);
+            var roles = await _orgRepo.GetAllRolesAsync(ct);
 
             IReadOnlyList<OrganizationRoleDTO> updatedRoles = roles;
-
             if (excludeOwner)
             {
                 updatedRoles = roles.Where(r => !r.RoleName.Equals("Owner", StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            response.Status = 200;
-            response.Message = "Organization roles fetched";
-            response.Data = updatedRoles;
-            return response;
+            return ApiResponse<IReadOnlyList<OrganizationRoleDTO>>.Success(updatedRoles, "Organization roles fetched successfully", 200);
         }
 
         public async Task<ApiResponse<bool>> RemoveOrLeaveMemberAsync(int organizationId, int callerUserId, int targetUserId, CancellationToken ct)
         {
-            var response = new ApiResponse<bool>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organizationId";
-                return response;
+                return ApiResponse<bool>.Error("Invalid organization id", 400);
             }
 
             if (targetUserId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid targetUserId";
-                return response;
+                return ApiResponse<bool>.Error("Invalid target user id", 400);
             }
 
             await _orgRepo.RemoveOrLeaveMemberAsync(
@@ -233,95 +167,72 @@ namespace server.Services.Implementations
                 ct
             );
 
-            response.Status = 200;
-            response.Message = "User removed from organization";
-            return response;
+            return ApiResponse<bool>.Success(true, "User removed from organization successfully", 200);
         }
 
         public async Task<ApiResponse> SoftDeleteOrganizationAsync(int organizationId, int currentUserId, CancellationToken ct)
         {
-            var response = new ApiResponse();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse.Error("Invalid organization id", 400);
             }
 
-            var result = await this._orgRepo.SoftDeleteOrganization(organizationId, currentUserId, ct);
+            var result = await _orgRepo.SoftDeleteOrganization(organizationId, currentUserId, ct);
 
-            if(result != true)
+            if (!result)
             {
-                response.Status = 500;
-                response.Message = "Unable to delete organization";
-                return response;
+                return ApiResponse.Error("Unable to delete organization", 500);
             }
 
-            response.Status = 200;
-            response.Message = "Organization deleted";
-            return response;
+            return ApiResponse.Success("Organization deleted successfully", 200);
         }
 
         public async Task<ApiResponse<TransferOwnershipResponseDTO?>> TransferOwnershipAsync(int organizationId, int currentOwnerUserId, TransferOwnershipRequestDTO request, CancellationToken ct)
         {
-            var response = new ApiResponse<TransferOwnershipResponseDTO?>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse<TransferOwnershipResponseDTO?>.Error("Invalid organization id", 400);
             }
 
             if (request.NewOwnerUserId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid recipient user id";
-                return response;
+                return ApiResponse<TransferOwnershipResponseDTO?>.Error("Invalid recipient user id", 400);
             }
 
             if (currentOwnerUserId == request.NewOwnerUserId)
             {
-                response.Status = 400;
-                response.Message = "Cannot transfer ownership to yourslef";
-                return response;
+                return ApiResponse<TransferOwnershipResponseDTO?>.Error("Cannot transfer ownership to yourself", 400);
             }
 
-            var result = await this._orgRepo.TransferOwnershipAsync(organizationId, currentOwnerUserId, request.NewOwnerUserId, request.PreviousOwnerNewRoleId, ct);
+            var result = await _orgRepo.TransferOwnershipAsync(
+                organizationId,
+                currentOwnerUserId,
+                request.NewOwnerUserId,
+                request.PreviousOwnerNewRoleId,
+                ct
+            );
 
-            response.Status = 200;
-            response.Message = "Ownership transferred successfully";
-            response.Data = result;
-            return response;
+            return ApiResponse<TransferOwnershipResponseDTO?>.Success(result, "Ownership transferred successfully", 200);
         }
 
         public async Task<ApiResponse<UpdatedMemberRoleResponseDTO>> UpdateMemberRoleAsync(int organizationId, int callerUserId, int targetUserId, int newRoleId, CancellationToken ct)
         {
-            var response = new ApiResponse<UpdatedMemberRoleResponseDTO>();
-
             if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization ID.";
-                return response;
+                return ApiResponse<UpdatedMemberRoleResponseDTO>.Error("Invalid organization id", 400);
             }
 
             if (targetUserId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid target user ID.";
-                return response;
+                return ApiResponse<UpdatedMemberRoleResponseDTO>.Error("Invalid target user id", 400);
             }
 
             if (newRoleId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid role ID.";
-                return response;
+                return ApiResponse<UpdatedMemberRoleResponseDTO>.Error("Invalid role id", 400);
             }
 
-            var result = await this._orgRepo.UpdateMemberRoleAsync(
+            var result = await _orgRepo.UpdateMemberRoleAsync(
                 organizationId,
                 callerUserId,
                 targetUserId,
@@ -331,50 +242,36 @@ namespace server.Services.Implementations
 
             if (result == null)
             {
-                response.Status = 404;
-                response.Message = "No record updated";
-                return response;
+                return ApiResponse<UpdatedMemberRoleResponseDTO>.Error("No record updated", 404);
             }
 
-            response.Status = 200;
-            response.Message = "Role update successfully";
-            response.Data = result;
-            return response;
+            return ApiResponse<UpdatedMemberRoleResponseDTO>.Success(result, "Role updated successfully", 200);
         }
 
-        public async Task<ApiResponse<UpdateOrganizationResponseDTO>> UpdateOrganizationAsync(int organizationId, int currentUserId, UpdateOrganizationReqeustDTO request, CancellationToken ct)
+        public async Task<ApiResponse<UpdateOrganizationResponseDTO>> UpdateOrganizationAsync(int organizationId, int currentUserId, UpdateOrganizationRequestDTO request, CancellationToken ct)
         {
-            var response = new ApiResponse<UpdateOrganizationResponseDTO>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse<UpdateOrganizationResponseDTO>.Error("Invalid organization id", 400);
             }
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                response.Status = 400;
-                response.Message = "Organization name is required";
-                return response;
+                return ApiResponse<UpdateOrganizationResponseDTO>.Error("Organization name is required", 400);
             }
 
             string trimmedName = request.Name.Trim();
-            if(trimmedName.Length > 150)
+            if (trimmedName.Length > 150)
             {
-                response.Status = 400;
-                response.Message = "Organization name cannot exceed 150 characters";
-                return response;
+                return ApiResponse<UpdateOrganizationResponseDTO>.Error("Organization name cannot exceed 150 characters", 400);
             }
 
             string? newlyUploadLogoUrl = null;
             bool shouldUpdateLogo = false;
 
-            // Determine if a new file is uploaded or user asked to clear logo
-            if(request.LogoFile is not null && request.LogoFile.Length > 0)
+            if (request.LogoFile is not null && request.LogoFile.Length > 0)
             {
-                newlyUploadLogoUrl = await this._fileStorageService.UploadOrganizationLogoAsync(request.LogoFile, "logos");
+                newlyUploadLogoUrl = await _fileStorageService.UploadOrganizationLogoAsync(request.LogoFile, "logos");
                 shouldUpdateLogo = true;
             }
             else if (request.RemoveExistingLogo)
@@ -385,7 +282,7 @@ namespace server.Services.Implementations
 
             try
             {
-                var dbResult = await this._orgRepo.UpdateOrganizationAsync(
+                var dbResult = await _orgRepo.UpdateOrganizationAsync(
                     organizationId: organizationId,
                     userId: currentUserId,
                     name: trimmedName,
@@ -395,15 +292,12 @@ namespace server.Services.Implementations
                     ct: ct
                 );
 
-                // if a new logo is reqplaced with previous one, delete the previous physical file
-                if(shouldUpdateLogo && !string.IsNullOrEmpty(dbResult.PreviousLogoUrl))
+                if (shouldUpdateLogo && !string.IsNullOrEmpty(dbResult.PreviousLogoUrl))
                 {
-                    await this._fileStorageService.DeleteOrganizationLogoAsync(dbResult.PreviousLogoUrl);
+                    await _fileStorageService.DeleteOrganizationLogoAsync(dbResult.PreviousLogoUrl);
                 }
 
-                response.Status = 200;
-                response.Message = "Organization updated";
-                response.Data = new UpdateOrganizationResponseDTO
+                var responseData = new UpdateOrganizationResponseDTO
                 {
                     OrganizationId = dbResult.OrganizationId,
                     Name = dbResult.Name,
@@ -413,19 +307,16 @@ namespace server.Services.Implementations
                     UpdatedAt = dbResult.UpdatedAt,
                     CurrentUserRole = dbResult.CurrentUserRole
                 };
-                return response;
+
+                return ApiResponse<UpdateOrganizationResponseDTO>.Success(responseData, "Organization updated successfully", 200);
             }
-            catch(Exception ex)
+            catch
             {
-                // cleanup newly uploaded file if DB update failed
                 if (!string.IsNullOrEmpty(newlyUploadLogoUrl))
                 {
-                    await this._fileStorageService.DeleteOrganizationLogoAsync(newlyUploadLogoUrl);
+                    await _fileStorageService.DeleteOrganizationLogoAsync(newlyUploadLogoUrl);
                 }
-
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
+                throw;
             }
         }
     }

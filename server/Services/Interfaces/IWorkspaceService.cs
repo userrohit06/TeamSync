@@ -1,4 +1,5 @@
 ﻿using server.DTOs.Common;
+using server.DTOs.Organization;
 using server.DTOs.Workspace;
 
 namespace server.Services.Interfaces
@@ -9,6 +10,13 @@ namespace server.Services.Interfaces
             int organizationId,
             int currentUserId,
             CreateWorkspaceRequestDTO request,
+            CancellationToken ct
+        );
+
+        Task<ApiResponse<CursorPagedResult<WorkspaceResponseDTO>>> GetWorkspacesAsync(
+            int organizationId,
+            int callerUserId,
+            CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
     }

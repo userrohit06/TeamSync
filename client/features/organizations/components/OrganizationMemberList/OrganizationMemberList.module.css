@@ -223,3 +223,67 @@
 .retryBtn:hover {
   background: var(--primary-hover);
 }
+
+.editRoleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.editRoleBtn:hover {
+  background: var(--surface-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.actionRow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.actionBtn:hover {
+  background: var(--surface-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.removeActionBtn:hover {
+  background: rgba(225, 29, 72, 0.1);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.transferActionBtn {
+  color: var(--warning);
+}
+
+.transferActionBtn:hover {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: var(--warning);
+}

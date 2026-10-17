@@ -22,5 +22,8 @@ namespace server.Models
         Task<List<usp_OrganizationMember_AddorInviteResult>> usp_OrganizationMember_AddorInviteAsync(int? organizationId, int? callerUserId, string targetEmail, int? roleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<usp_OrganizationMember_RemoveOrLeaveResult>> usp_OrganizationMember_RemoveOrLeaveAsync(int? organizationId, int? callerUserId, int? targetUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
         Task<List<usp_OrganizationMember_UpdateRoleResult>> usp_OrganizationMember_UpdateRoleAsync(int? organizationId, int? callerUserId, int? targetUserId, int? newRoleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_Users_PagedResult>> usp_Users_PagedAsync(int? pageSize, string searchTerm, DateTime? cursorCreatedAt, int? cursorUserId, string mode, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_Workspace_CreateResult>> usp_Workspace_CreateAsync(int? organizationId, int? createdByUserId, string name, string description, bool? isPrivate, string baseSlug, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
+        Task<List<usp_Workspace_PagedResult>> usp_Workspace_PagedAsync(int? organizationId, int? callerUserId, DateTime? cursorCreatedAt, int? cursorWorkspaceId, int? pageSize, string searchTerm, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
     }
 }

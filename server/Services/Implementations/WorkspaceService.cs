@@ -1,4 +1,5 @@
-﻿using server.DTOs.Common;
+using server.DTOs.Common;
+using server.DTOs.Organization;
 using server.DTOs.Workspace;
 using server.Helpers;
 using server.Repositories.Interfaces;
@@ -12,44 +13,52 @@ namespace server.Services.Implementations
 
         public WorkspaceService(IWorkspaceRepository workspaceRepository)
         {
-            this._workspaceRepo = workspaceRepository;
+            _workspaceRepo = workspaceRepository;
         }
 
         public async Task<ApiResponse<WorkspaceResponseDTO>> CreateWorkspaceAsync(int organizationId, int currentUserId, CreateWorkspaceRequestDTO request, CancellationToken ct)
         {
-            var response = new ApiResponse<WorkspaceResponseDTO>();
-
-            if(organizationId <= 0)
+            if (organizationId <= 0)
             {
-                response.Status = 400;
-                response.Message = "Invalid organization id";
-                return response;
+                return ApiResponse<WorkspaceResponseDTO>.Error("Invalid organization id", 400);
             }
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                response.Status = 400;
-                response.Message = "Workspace name is required";
-                return response;
+                return ApiResponse<WorkspaceResponseDTO>.Error("Workspace name is required", 400);
             }
 
             string trimmedName = request.Name.Trim();
             string baseSlug = SlugHelper.GenerateSlug(trimmedName);
 
-            var result = await this._workspaceRepo.CreateWorkspaceAsync(
-                    organizationId,
-                    currentUserId,
-                    trimmedName,
-                    request.Description,
-                    request.IsPrivate,
-                    baseSlug,
-                    ct
-                );
+            var result = await _workspaceRepo.CreateWorkspaceAsync(
+                organizationId,
+                currentUserId,
+                trimmedName,
+                request.Description?.Trim(),
+                request.IsPrivate,
+                baseSlug,
+                ct
+            );
 
-            response.Status = 201;
-            response.Message = "Workspace created successfully";
-            response.Data = result;
-            return response;
+            return ApiResponse<WorkspaceResponseDTO>.Success(result, "Workspace created successfully", 201);
+        }
+
+        public async Task<ApiResponse<CursorPagedResult<WorkspaceResponseDTO>>> GetWorkspacesAsync(int organizationId, int callerUserId, CursorPaginationFilterDTO filter, CancellationToken ct)
+        {
+            if(organizationId <= 0)
+            {
+                ApiResponse<CursorPagedResult<WorkspaceResponseDTO>>.Error("Invalid organization ID", 400);
+            }
+
+            var result = await this._workspaceRepo.GetWorkspacesCursorPagedAsync(
+                organizationId,
+                callerUserId,
+                filter,
+                ct
+            );
+
+            return ApiResponse<CursorPagedResult<WorkspaceResponseDTO>>.Success(result, "Workspaces fetched successfully", 200);
         }
     }
 }

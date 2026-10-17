@@ -1,14 +1,12 @@
-﻿using server.DTOs.Auth;
+using server.DTOs.Auth;
 using Microsoft.AspNetCore.Http;
 using server.DTOs.Common;
+using server.Helpers;
 using server.Models;
 using server.Repositories.Interfaces;
 using server.Services.Interfaces;
 using BcryptNet = BCrypt.Net.BCrypt;
 using Google.Apis.Auth;
-using System.Security.Cryptography;
-using System.Text;
-using server.utils;
 
 namespace server.Services.Implementations
 {
@@ -29,26 +27,23 @@ namespace server.Services.Implementations
             IHttpContextAccessor httpContextAccessor,
             IEmailService emailService)
         {
-            this._userRepository = userRepository;
-            this._fileStorageService = fileStorageService;
-            this._tokenService = tokenService;
-            this._config = config;
-            this._httpContext = httpContextAccessor;
-            this._emailService = emailService;
+            _userRepository = userRepository;
+            _fileStorageService = fileStorageService;
+            _tokenService = tokenService;
+            _config = config;
+            _httpContext = httpContextAccessor;
+            _emailService = emailService;
         }
 
         private string? ResolveProfilePhotoUrl(string? photoPath)
         {
-            // 1. Guard against empty/null values
             if (string.IsNullOrWhiteSpace(photoPath))
                 return null;
 
-            // 2. Check if it is already a complete URL
             if (Uri.TryCreate(photoPath, UriKind.Absolute, out _))
                 return photoPath;
 
-            // 3. Prepend the host and scheme for relative server files
-            var request = this._httpContext.HttpContext?.Request;
+            var request = _httpContext.HttpContext?.Request;
             if (request != null)
             {
                 var baseUrl = $"{request.Scheme}://{request.Host}";
@@ -60,330 +55,237 @@ namespace server.Services.Implementations
 
         public async Task<ApiResponse> ForgotPassword(string email, CancellationToken ct)
         {
-            var response = new ApiResponse();
-            var user = await this._userRepository.GetUserByEmail(email, ct);
-
-            // Return generic message regardless of user existence to prevent account enumeration
-            if (user != null)
-            {
-                // TODO: Generate reset token and dispatch email via notification service
-            }
-
-            response.Status = 200;
-            response.Message = "If that email exists in our system, a password reset link has been sent.";
-            return response;
-        }
-
-        public async Task<ApiResponse<SigninResponseDTO>> GoogleSignin(GoogleSigninRequestDTO request, CancellationToken ct)
-        {
-            var response = new ApiResponse<SigninResponseDTO>();
-
-            if (string.IsNullOrEmpty(request.IdToken))
-            {
-                response.Status = 400;
-                response.Message = "Id Token is required";
-                return response;
-            }
-
-            try
-            {
-                var clientId = this._config["Google:ClientId"];
-                if (string.IsNullOrEmpty(clientId))
-                {
-                    response.Status = 500;
-                    response.Message = "Google Client Id is not configured!";
-                    return response;
-                }
-
-                GoogleJsonWebSignature.Payload payload;
-                try
-                {
-                    payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, new GoogleJsonWebSignature.ValidationSettings
-                    {
-                        Audience = new[] { clientId }
-                    });
-                }
-                catch
-                {
-                    response.Status = 400;
-                    response.Message = "Invalid Google Id token";
-                    return response;
-                }
-
-                if (!payload.EmailVerified)
-                {
-                    response.Status = 400;
-                    response.Message = "Google email is not verified";
-                    return response;
-                }
-
-                var googleId = payload.Subject;
-                var email = payload.Email;
-
-                var user = await this._userRepository.GetUserByGoogleId(googleId, ct);
-
-                if (user == null)
-                {
-                    user = await this._userRepository.GetUserByEmail(email, ct);
-
-                    if (user != null)
-                    {
-                        user.GoogleId = googleId;
-                        user.UpdatedAt = DateTime.UtcNow;
-                        user.LastLoginAt = DateTime.UtcNow;
-
-                        // Only assign Google photo if user does not already have one
-                        if (string.IsNullOrEmpty(user.ProfilePhoto))
-                        {
-                            user.ProfilePhoto = payload.Picture;
-                        }
-                    }
-                    else
-                    {
-                        user = new User
-                        {
-                            FullName = payload.Name ?? email,
-                            Email = email,
-                            PasswordHash = null,
-                            GoogleId = googleId,
-                            ProfilePhoto = payload.Picture,
-                            CreatedAt = DateTime.UtcNow,
-                            LastLoginAt = DateTime.UtcNow,
-                            IsActive = true,
-                            IsDeleted = false
-                        };
-
-                        await this._userRepository.AddUser(user, ct);
-                    }
-                }
-                else
-                {
-                    user.LastLoginAt = DateTime.UtcNow;
-                    user.UpdatedAt = DateTime.UtcNow;
-
-                    if (string.IsNullOrEmpty(user.ProfilePhoto) && !string.IsNullOrWhiteSpace(payload.Picture))
-                    {
-                        user.ProfilePhoto = payload.Picture;
-                    }
-                }
-
-                await this._userRepository.Save();
-
-                var token = this._tokenService.GenerateJWTToken(user.UserId, user.Email, user.FullName);
-
-                response.Status = 200;
-                response.Message = "User login successful";
-                response.Data = new SigninResponseDTO
-                {
-                    UserId = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    ProfilePhotoUrl = ResolveProfilePhotoUrl(user.ProfilePhoto),
-                    token = token
-                };
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
-            }
-        }
-
-        public async Task<ApiResponse<SigninResponseDTO>> Signin(string email, string password, CancellationToken ct)
-        {
-            var response = new ApiResponse<SigninResponseDTO>();
-
-            try
-            {
-                var user = await this._userRepository.GetUserByEmail(email, ct);
-
-                if (user == null)
-                {
-                    response.Status = 401;
-                    response.Message = "Invalid email or password";
-                    return response;
-                }
-
-                if (string.IsNullOrEmpty(user.PasswordHash))
-                {
-                    response.Status = 400;
-                    response.Message = "This account was registered via Google. Please sign in with Google.";
-                    return response;
-                }
-
-                bool isPasswordCorrect = BcryptNet.Verify(password, user.PasswordHash);
-
-                if (!isPasswordCorrect)
-                {
-                    response.Status = 401;
-                    response.Message = "Invalid email or password";
-                    return response;
-                }
-
-                string token = this._tokenService.GenerateJWTToken(user.UserId, user.Email, user.FullName);
-
-                await this._userRepository.UpdateLastLoginAt(email, ct);
-
-                response.Status = 200;
-                response.Message = "User signin successful";
-                response.Data = new SigninResponseDTO
-                {
-                    UserId = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    ProfilePhotoUrl = ResolveProfilePhotoUrl(user.ProfilePhoto),
-                    token = token
-                };
-                return response;
-            }
-            catch (Exception ex)
-            {
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
-            }
-        }
-
-        public async Task<ApiResponse> Signup(string fullName, string email, string password, IFormFile? photo, CancellationToken ct)
-        {
-            var response = new ApiResponse();
-
-            try
-            {
-                var user = await this._userRepository.GetUserByEmail(email, ct);
-
-                if (user != null)
-                {
-                    response.Status = 409;
-                    response.Message = "User already exists";
-                    return response;
-                }
-
-                string? photoUrl = null;
-                if (photo != null)
-                {
-                    photoUrl = await this._fileStorageService.SaveProfilePhotoAsync(photo, email);
-                }
-
-                string hashedPassword = BcryptNet.HashPassword(password);
-
-                var newUser = new User
-                {
-                    FullName = fullName,
-                    Email = email,
-                    PasswordHash = hashedPassword,
-                    ProfilePhoto = photoUrl,
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true,
-                    IsDeleted = false
-                };
-
-                await this._userRepository.AddUser(newUser, ct);
-                await this._userRepository.Save();
-
-                response.Status = 201;
-                response.Message = "User signup successful";
-                return response;
-            }
-            catch (BadHttpRequestException ex)
-            {
-                response.Status = 400;
-                response.Message = ex.Message;
-                return response;
-            }
-            catch (Exception ex)
-            {
-                response.Status = 500;
-                response.Message = ex.Message;
-                return response;
-            }
+            var clientUrl = _config["ClientSettings:BaseUrl"] ?? "http://localhost:3000";
+            return await ForgotPassword(email, clientUrl, ct);
         }
 
         public async Task<ApiResponse> ForgotPassword(string email, string clientUrl, CancellationToken ct)
         {
-            var response = new ApiResponse();
-            RandomToken randomToken = new RandomToken();
+            var user = await _userRepository.GetUserByEmail(email, ct);
 
-            // 1. Find user by email
-            var user = await this._userRepository.GetUserByEmail(email, ct);
-
-            if(user == null)
+            // Return generic message regardless of user existence to prevent account enumeration
+            if (user == null)
             {
-                response.Status = 200;
-                response.Message = "Email sent successfully";
-                return response;
+                return ApiResponse.Success("If that email exists in our system, a password reset link has been sent.", 200);
             }
 
-            // 2. Generate a cryptographically secure random token (Raw token)
-            string rawToken = randomToken.GenerateSecureRandomToken();
+            // Generate cryptographically secure token & compute SHA-256 hash
+            string rawToken = RandomToken.GenerateSecureToken();
+            string hashedToken = RandomToken.ComputeHash(rawToken);
 
-            // 3. Create a one-way cryptographic hash of that raw token
-            string hashedToken = randomToken.ComputeSha256Hash(rawToken);
-
-            // 4. Update the user record with the hashed token and an expiry time
             user.PasswordResetToken = hashedToken;
             user.PasswordResetExpiry = DateTime.UtcNow.AddMinutes(15);
+            await _userRepository.UpdateAsync(user, ct);
 
-            // 5. Save updates to SQL Server
-            await this._userRepository.UpdateAsync(user, ct);
+            var resetLink = $"{clientUrl.TrimEnd('/')}/auth/reset-password?token={rawToken}";
 
-            // 6. Construct the absolute link sending only the raw token to the frontend
-            var resetLink = $"{clientUrl}/auth/reset-password?token={rawToken}";
-
-            // 7. Fire off the email through Mailkit
-            await this._emailService.SendForgotPasswordEmailAsync(user.Email, user.FullName, resetLink);
-
-            response.Status = 200;
-            response.Message = "Emaiil sent successfully";
-            return response;
-        }
-
-        public async Task<ApiResponse> ResetPassword (ResetPasswordRequestDTO request, CancellationToken ct)
-        {
-            var response = new ApiResponse();
-            RandomToken randomToken = new RandomToken();
-
-            // 1. Hash the incoming raw token from the user's URL request
-            string incomingHashedToken = randomToken.ComputeSha256Hash(request.Token);
-
-            // 2. Fetch the use directly by that hashed token from SQL
-            var user = await this._userRepository.GetByResetToken(incomingHashedToken);
-
-            // 3. Validate that the user exists
-            if(user == null)
+            try
             {
-                response.Status = 404;
-                response.Message = "User not found";
-                return response;
+                await _emailService.SendForgotPasswordEmailAsync(user.Email, user.FullName, resetLink);
+            }
+            catch
+            {
+                // In production, log email sending error but keep generic message so we don't leak failures
             }
 
-            // 4. Validate that the token hasn't expired yet
-            bool isPasswordResetTokenValid = !string.IsNullOrEmpty(user.PasswordResetToken) && user.PasswordResetExpiry.HasValue && user.PasswordResetExpiry > DateTime.UtcNow;
+            return ApiResponse.Success("If that email exists in our system, a password reset link has been sent.", 200);
+        }
+
+        public async Task<ApiResponse<SigninResponseDTO>> GoogleSignin(GoogleSigninRequestDTO request, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(request.IdToken))
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Id Token is required", 400);
+            }
+
+            var clientId = _config["Google:ClientId"];
+            if (string.IsNullOrEmpty(clientId))
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Google Client Id is not configured!", 500);
+            }
+
+            GoogleJsonWebSignature.Payload payload;
+            try
+            {
+                payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { clientId }
+                });
+            }
+            catch
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Invalid Google Id token", 400);
+            }
+
+            if (!payload.EmailVerified)
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Google email is not verified", 400);
+            }
+
+            var googleId = payload.Subject;
+            var email = payload.Email;
+
+            var user = await _userRepository.GetUserByGoogleId(googleId, ct);
+
+            if (user == null)
+            {
+                user = await _userRepository.GetUserByEmail(email, ct);
+
+                if (user != null)
+                {
+                    user.GoogleId = googleId;
+                    user.UpdatedAt = DateTime.UtcNow;
+                    user.LastLoginAt = DateTime.UtcNow;
+
+                    if (string.IsNullOrEmpty(user.ProfilePhoto))
+                    {
+                        user.ProfilePhoto = payload.Picture;
+                    }
+                }
+                else
+                {
+                    user = new User
+                    {
+                        FullName = payload.Name ?? email,
+                        Email = email,
+                        PasswordHash = null,
+                        GoogleId = googleId,
+                        ProfilePhoto = payload.Picture,
+                        CreatedAt = DateTime.UtcNow,
+                        LastLoginAt = DateTime.UtcNow,
+                        IsActive = true,
+                        IsDeleted = false
+                    };
+
+                    await _userRepository.AddUser(user, ct);
+                }
+            }
+            else
+            {
+                user.LastLoginAt = DateTime.UtcNow;
+                user.UpdatedAt = DateTime.UtcNow;
+
+                if (string.IsNullOrEmpty(user.ProfilePhoto) && !string.IsNullOrWhiteSpace(payload.Picture))
+                {
+                    user.ProfilePhoto = payload.Picture;
+                }
+            }
+
+            await _userRepository.Save();
+
+            var token = _tokenService.GenerateJWTToken(user.UserId, user.Email, user.FullName);
+
+            var data = new SigninResponseDTO
+            {
+                UserId = user.UserId,
+                FullName = user.FullName,
+                Email = user.Email,
+                ProfilePhotoUrl = ResolveProfilePhotoUrl(user.ProfilePhoto),
+                Token = token
+            };
+
+            return ApiResponse<SigninResponseDTO>.Success(data, "User login successful", 200);
+        }
+
+        public async Task<ApiResponse<SigninResponseDTO>> Signin(string email, string password, CancellationToken ct)
+        {
+            var user = await _userRepository.GetUserByEmail(email, ct);
+
+            if (user == null)
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Invalid email or password", 401);
+            }
+
+            if (string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return ApiResponse<SigninResponseDTO>.Error("This account was registered via Google. Please sign in with Google.", 400);
+            }
+
+            bool isPasswordCorrect = BcryptNet.Verify(password, user.PasswordHash);
+
+            if (!isPasswordCorrect)
+            {
+                return ApiResponse<SigninResponseDTO>.Error("Invalid email or password", 401);
+            }
+
+            string token = _tokenService.GenerateJWTToken(user.UserId, user.Email, user.FullName);
+
+            await _userRepository.UpdateLastLoginAt(email, ct);
+
+            var data = new SigninResponseDTO
+            {
+                UserId = user.UserId,
+                FullName = user.FullName,
+                Email = user.Email,
+                ProfilePhotoUrl = ResolveProfilePhotoUrl(user.ProfilePhoto),
+                Token = token
+            };
+
+            return ApiResponse<SigninResponseDTO>.Success(data, "User signin successful", 200);
+        }
+
+        public async Task<ApiResponse> Signup(string fullName, string email, string password, IFormFile? photo, CancellationToken ct)
+        {
+            var existingUser = await _userRepository.GetUserByEmail(email, ct);
+
+            if (existingUser != null)
+            {
+                return ApiResponse.Error("User already exists", 409);
+            }
+
+            string? photoUrl = null;
+            if (photo != null)
+            {
+                photoUrl = await _fileStorageService.SaveProfilePhotoAsync(photo, email);
+            }
+
+            string hashedPassword = BcryptNet.HashPassword(password);
+
+            var newUser = new User
+            {
+                FullName = fullName,
+                Email = email,
+                PasswordHash = hashedPassword,
+                ProfilePhoto = photoUrl,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+                IsDeleted = false
+            };
+
+            await _userRepository.AddUser(newUser, ct);
+            await _userRepository.Save();
+
+            return ApiResponse.Success("User signup successful", 201);
+        }
+
+        public async Task<ApiResponse> ResetPassword(ResetPasswordRequestDTO request, CancellationToken ct)
+        {
+            string incomingHashedToken = RandomToken.ComputeHash(request.Token);
+
+            var user = await _userRepository.GetByResetToken(incomingHashedToken);
+
+            if (user == null)
+            {
+                return ApiResponse.Error("User not found", 404);
+            }
+
+            bool isPasswordResetTokenValid = !string.IsNullOrEmpty(user.PasswordResetToken) 
+                && user.PasswordResetExpiry.HasValue 
+                && user.PasswordResetExpiry > DateTime.UtcNow;
 
             if (!isPasswordResetTokenValid)
             {
-                response.Status = 400;
-                response.Message = "Invalid token";
-                return response;
+                return ApiResponse.Error("Invalid or expired token", 400);
             }
 
-            // 5. Update user's password hash
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-
-            // 6. Cleanup: Invalidate the token immediately so it can never be reused
+            user.PasswordHash = BcryptNet.HashPassword(request.NewPassword);
             user.PasswordResetToken = null;
             user.PasswordResetExpiry = null;
             user.UpdatedAt = DateTime.UtcNow;
 
-            // 7. Save changes to the database
-            await this._userRepository.UpdateAsync(user, ct);
+            await _userRepository.UpdateAsync(user, ct);
 
-            response.Status = 200;
-            response.Message = "Password reset successfully";
-            return response;
+            return ApiResponse.Success("Password reset successfully", 200);
         }
     }
 }

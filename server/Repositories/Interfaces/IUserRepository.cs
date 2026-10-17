@@ -1,4 +1,6 @@
-﻿using server.Models;
+﻿using server.DTOs.Common;
+using server.DTOs.User;
+using server.Models;
 
 namespace server.Repositories.Interfaces
 {
@@ -11,5 +13,10 @@ namespace server.Repositories.Interfaces
         Task<int> Save();
         Task UpdateLastLoginAt(string email, CancellationToken ct);
         Task<User?> GetByResetToken(string hashedToken);
+        Task<CursorPagedResult<UserResponseDTO>> GetUsersAsync(
+            CursorPaginationFilterDTO filter,
+            CancellationToken ct,
+            string mode = "All"
+        );
     }
 }

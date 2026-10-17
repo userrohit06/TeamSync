@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace server.DTOs.Auth
 {
@@ -6,6 +7,15 @@ namespace server.DTOs.Auth
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter valid email")]
-        public string email { get; set; } = string.Empty;
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = string.Empty;
+
+        // Backward compatibility
+        [JsonIgnore]
+        public string email
+        {
+            get => Email;
+            set => Email = value;
+        }
     }
 }

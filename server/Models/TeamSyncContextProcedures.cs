@@ -454,5 +454,173 @@ namespace server.Models
 
             return _;
         }
+
+        public virtual async Task<List<usp_Users_PagedResult>> usp_Users_PagedAsync(int? pageSize, string searchTerm, DateTime? cursorCreatedAt, int? cursorUserId, string mode, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "PageSize",
+                    Value = pageSize ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "SearchTerm",
+                    Size = 200,
+                    Value = searchTerm ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorCreatedAt",
+                    Value = cursorCreatedAt ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.DateTime,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorUserId",
+                    Value = cursorUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Mode",
+                    Size = 10,
+                    Value = mode ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Users_PagedResult>("EXEC @returnValue = [dbo].[usp_Users_Paged] @PageSize = @PageSize, @SearchTerm = @SearchTerm, @CursorCreatedAt = @CursorCreatedAt, @CursorUserId = @CursorUserId, @Mode = @Mode", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Workspace_CreateResult>> usp_Workspace_CreateAsync(int? organizationId, int? createdByUserId, string name, string description, bool? isPrivate, string baseSlug, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CreatedByUserId",
+                    Value = createdByUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Name",
+                    Size = 200,
+                    Value = name ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Description",
+                    Size = 1000,
+                    Value = description ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "IsPrivate",
+                    Value = isPrivate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "BaseSlug",
+                    Size = 120,
+                    Value = baseSlug ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Workspace_CreateResult>("EXEC @returnValue = [dbo].[usp_Workspace_Create] @OrganizationId = @OrganizationId, @CreatedByUserId = @CreatedByUserId, @Name = @Name, @Description = @Description, @IsPrivate = @IsPrivate, @BaseSlug = @BaseSlug", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Workspace_PagedResult>> usp_Workspace_PagedAsync(int? organizationId, int? callerUserId, DateTime? cursorCreatedAt, int? cursorWorkspaceId, int? pageSize, string searchTerm, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CallerUserId",
+                    Value = callerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorCreatedAt",
+                    Value = cursorCreatedAt ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.DateTime,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorWorkspaceId",
+                    Value = cursorWorkspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "PageSize",
+                    Value = pageSize ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "SearchTerm",
+                    Size = 200,
+                    Value = searchTerm ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Workspace_PagedResult>("EXEC @returnValue = [dbo].[usp_Workspace_Paged] @OrganizationId = @OrganizationId, @CallerUserId = @CallerUserId, @CursorCreatedAt = @CursorCreatedAt, @CursorWorkspaceId = @CursorWorkspaceId, @PageSize = @PageSize, @SearchTerm = @SearchTerm", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
     }
 }
