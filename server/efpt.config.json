@@ -81,6 +81,18 @@
       {
          "Name": "[dbo].[usp_OrganizationMember_UpdateRole]",
          "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Users_Paged]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Workspace_Create]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Workspace_Paged]",
+         "ObjectType": 1
       }
    ],
    "UiHint": null,

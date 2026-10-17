@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 
 namespace server.Helpers
@@ -6,7 +6,7 @@ namespace server.Helpers
     public class CursorHelper
     {
         /// <summary>
-        /// Endoces any serializable payload into a URL safe Base64 token
+        /// Encodes any serializable payload into a URL safe Base64 token
         /// </summary>
         public static string Encode<T>(T payload)
         {
@@ -20,7 +20,7 @@ namespace server.Helpers
         }
 
         /// <summary>
-        /// Decodes a URL-safe Base64 token back into the types payload.
+        /// Decodes a URL-safe Base64 token back into the typed payload.
         /// </summary>
         public static T? Decode<T>(string? cursor) where T : class
         {

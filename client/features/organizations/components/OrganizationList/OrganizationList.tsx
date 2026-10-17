@@ -213,9 +213,9 @@ const OrganizationList = () => {
               label: size.toString(),
               value: size.toString(),
             }))}
-            value={pageSize}
-            onChange={(e) =>
-              handlePageSizeChange(Number(e.target.value) as PageSize)
+            value={String(pageSize)}
+            onChange={(value: string) =>
+              handlePageSizeChange(Number(value) as PageSize)
             }
             className={styles.pageSizeSelect}
             selectSize="small"

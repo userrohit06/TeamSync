@@ -1,4 +1,4 @@
-﻿using server.DTOs.Common;
+using server.DTOs.Common;
 using server.DTOs.Organization;
 
 namespace server.Services.Interfaces
@@ -23,7 +23,7 @@ namespace server.Services.Interfaces
         Task<ApiResponse<UpdateOrganizationResponseDTO>> UpdateOrganizationAsync(
             int organizationId,
             int currentUserId,
-            UpdateOrganizationReqeustDTO request,
+            UpdateOrganizationRequestDTO request,
             CancellationToken ct
         );
         Task<ApiResponse> SoftDeleteOrganizationAsync(

@@ -82,3 +82,32 @@ export interface GetOrganizationMembersParams {
   cursor?: string;
   searchTerm?: string;
 }
+
+export interface RoleResponsedTO {
+  roleId: number;
+  roleName: string;
+  description: string;
+}
+
+export interface AddMemberRequest {
+  organizationId: number;
+  email: string;
+  roleId: number;
+}
+
+export interface UpdateMemberRoleRequest {
+  organizationId: number;
+  targetUserId: number;
+  roleId: number;
+}
+
+export interface RemoveMemberRequest {
+  organizationId: number;
+  targetUserId: number;
+}
+
+export interface TransferOwnershipRequest {
+  organizationId: number;
+  newOwnerUserId: number;
+  previousOwnerNewRoleId?: number;
+}

@@ -1,41 +1,38 @@
-﻿using Microsoft.Data.SqlClient;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using server.DTOs.Common;
 using server.DTOs.Organization;
+using server.Helpers;
 using server.Models;
 using server.Repositories.Interfaces;
-using Dapper;
 using System.Data;
-using server.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace server.Repositories.Implementations
 {
-    public class OrganizationRepository : IOrganizationRepository
+    public class OrganizationRepository : BaseRepository, IOrganizationRepository
     {
         private readonly TeamSyncContext _dbContext;
-        private readonly IConfiguration _config;
 
-        public OrganizationRepository(TeamSyncContext context, IConfiguration config)
+        public OrganizationRepository(TeamSyncContext context, IConfiguration config) : base(config)
         {
-            this._dbContext = context;
-            this._config = config;
+            _dbContext = context;
         }
 
         public async Task<MemberDetailDTO> AddorInviteMemberAsync(int organizationId, int callerUserId, string email, int roleId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
             parameters.Add("@CallerUserId", callerUserId);
-            parameters.Add("@Email", email);
+            parameters.Add("@TargetEmail", email);
             parameters.Add("@RoleId", roleId);
 
             var command = new CommandDefinition(
                 commandText: "usp_OrganizationMember_AddorInvite",
                 parameters: parameters,
-                commandType: CommandType.Text,
+                commandType: CommandType.StoredProcedure,
                 cancellationToken: ct
             );
 
@@ -45,8 +42,7 @@ namespace server.Repositories.Implementations
 
         public async Task<OrganizationResponseDTO> CreateOrganization(string name, string? description, string? logoUrl, int createdByUserId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@Name", name);
@@ -68,7 +64,7 @@ namespace server.Repositories.Implementations
 
         public async Task<IReadOnlyList<OrganizationRoleDTO>> GetAllRolesAsync(CancellationToken ct)
         {
-            return await this._dbContext.OrganizationMemberRoles
+            return await _dbContext.OrganizationMemberRoles
                 .AsNoTracking()
                 .OrderBy(r => r.RoleId)
                 .Select(r => new OrganizationRoleDTO
@@ -84,39 +80,37 @@ namespace server.Repositories.Implementations
         {
             var cursorPayload = CursorHelper.Decode<MemberKeysetCursor>(filter.Cursor);
 
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
-            var paramters = new DynamicParameters();
-
-            paramters.Add("@OrganizationId", organizationId);
-            paramters.Add("@PageSize", filter.PageSize);
-            paramters.Add("@SearchTerm", filter.SearchTerm);
-            paramters.Add("@LastJoinedAt", cursorPayload?.JoinedAt);
-            paramters.Add("@LastUserId", cursorPayload?.UserId);
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrganizationId", organizationId);
+            parameters.Add("@PageSize", filter.PageSize);
+            parameters.Add("@SearchTerm", filter.SearchTerm);
+            parameters.Add("@LastJoinedAt", cursorPayload?.JoinedAt);
+            parameters.Add("@LastUserId", cursorPayload?.UserId);
 
             var command = new CommandDefinition(
                 commandText: "usp_GetOrganizationMembers_Paged",
-                parameters: paramters,
+                parameters: parameters,
                 commandType: CommandType.StoredProcedure,
                 cancellationToken: ct
             );
 
-            // pagesize + 1 is fetched to determine whether another page exists
+            // PageSize + 1 is fetched to determine whether another page exists
             var rawRows = (await connection.QueryAsync<OrganizationMemberResponseDTO>(command)).ToList();
 
             return CursorPagedResult<OrganizationMemberResponseDTO>.Create(
                 rawItems: rawRows,
                 requestedPageSize: filter.PageSize,
                 cursorSelector: item => CursorHelper.Encode(
-                        new MemberKeysetCursor(item.JoinedAt, item.UserId)
-                    )
+                    new MemberKeysetCursor(item.JoinedAt, item.UserId)
+                )
             );
         }
 
         public async Task<OrganizationDetailDTO?> GetOrganizationByIdForUserAsync(int organizationId, int userId, CancellationToken ct)
         {
-            return await this._dbContext.OrganizationMembers
+            return await _dbContext.OrganizationMembers
                 .AsNoTracking()
                 .Where(om => om.OrganizationId == organizationId
                     && om.UserId == userId
@@ -136,22 +130,20 @@ namespace server.Repositories.Implementations
                     om.MembershipStatus,
                     om.JoinedAt
                 ))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(ct);
         }
 
         public async Task<CursorPagedResult<UserOrganizationDTO>> GetUserOrganizationsCursorPagedAsync(int userId, CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            // Decode generic cursor
             var cursorPayload = CursorHelper.Decode<OrganizationKeysetCursor>(filter.Cursor);
 
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@UserId", userId);
             parameters.Add("@PageSize", filter.PageSize);
-            parameters.Add("@SearchTerm", filter?.SearchTerm);
-            parameters.Add("@lastJoinedAt", cursorPayload?.JoinedAt);
+            parameters.Add("@SearchTerm", filter.SearchTerm);
+            parameters.Add("@LastJoinedAt", cursorPayload?.JoinedAt);
             parameters.Add("@LastOrganizationId", cursorPayload?.OrganizationId);
 
             var command = new CommandDefinition(
@@ -166,27 +158,26 @@ namespace server.Repositories.Implementations
 
             // Strips the +1 row and builds the next cursor token
             return CursorPagedResult<UserOrganizationDTO>.Create(
-            rawItems: rawRows,
-            requestedPageSize: filter.PageSize,
-            cursorSelector: item => CursorHelper.Encode(new OrganizationKeysetCursor(item.JoinedAt, item.OrganizationId))
+                rawItems: rawRows,
+                requestedPageSize: filter.PageSize,
+                cursorSelector: item => CursorHelper.Encode(new OrganizationKeysetCursor(item.JoinedAt, item.OrganizationId))
             );
         }
 
         public async Task<bool> IsUserActiveMemberAsync(int organizationId, int userId, CancellationToken ct)
         {
-            return await this._dbContext.OrganizationMembers
+            return await _dbContext.OrganizationMembers
                 .AsNoTracking()
                 .AnyAsync(om => om.OrganizationId == organizationId
                     && om.UserId == userId
                     && om.MembershipStatus == "Active"
                     && om.Organization.IsActive
-                    && !om.Organization.IsDeleted);
+                    && !om.Organization.IsDeleted, ct);
         }
 
         public async Task<bool> RemoveOrLeaveMemberAsync(int organizationId, int callerUserId, int targetUserId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
@@ -201,14 +192,12 @@ namespace server.Repositories.Implementations
             );
 
             var result = await connection.ExecuteScalarAsync<int>(command);
-
             return result == 1;
         }
 
         public async Task<bool> SoftDeleteOrganization(int organizationId, int currentUserId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
@@ -222,14 +211,12 @@ namespace server.Repositories.Implementations
             );
 
             var result = await connection.ExecuteScalarAsync<int>(command);
-
             return result == 1;
         }
 
         public async Task<TransferOwnershipResponseDTO?> TransferOwnershipAsync(int organizationId, int currentOwnerUserId, int newOwnerUserId, int? previousOwnerRoleId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
@@ -245,22 +232,20 @@ namespace server.Repositories.Implementations
             );
 
             var result = await connection.QuerySingleOrDefaultAsync<TransferOwnershipResponseDTO>(command);
-
-            return result ?? throw new InvalidOperationException("Failed to transfer organization ownerhip");
+            return result ?? throw new InvalidOperationException("Failed to transfer organization ownership");
         }
 
         public async Task<UpdatedMemberRoleResponseDTO> UpdateMemberRoleAsync(int organizationId, int callerUserId, int targetUserId, int newRoleId, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
-            DynamicParameters parameters = new DynamicParameters();
+            var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
             parameters.Add("@CallerUserId", callerUserId);
             parameters.Add("@TargetUserId", targetUserId);
             parameters.Add("@NewRoleId", newRoleId);
 
-            CommandDefinition command = new CommandDefinition(
+            var command = new CommandDefinition(
                 commandText: "usp_OrganizationMember_UpdateRole",
                 parameters: parameters,
                 commandType: CommandType.StoredProcedure,
@@ -268,14 +253,12 @@ namespace server.Repositories.Implementations
             );
 
             var result = await connection.QuerySingleOrDefaultAsync<UpdatedMemberRoleResponseDTO>(command);
-
             return result ?? throw new InvalidOperationException("Failed to update member role");
         }
 
         public async Task<UpdateOrganizationDbResult> UpdateOrganizationAsync(int organizationId, int userId, string name, string? description, string? logoUrl, bool updateLogo, CancellationToken ct)
         {
-            string connectionString = this._config.GetConnectionString("DefaultConnection")!;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = CreateConnection();
 
             var parameters = new DynamicParameters();
             parameters.Add("@OrganizationId", organizationId);
@@ -293,7 +276,6 @@ namespace server.Repositories.Implementations
             );
 
             var result = await connection.QuerySingleOrDefaultAsync<UpdateOrganizationDbResult>(command);
-
             return result ?? throw new InvalidOperationException("Failed to update organization");
         }
     }

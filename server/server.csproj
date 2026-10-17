@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs\NewFolder1\**" />
+    <Content Remove="DTOs\NewFolder1\**" />
+    <EmbeddedResource Remove="DTOs\NewFolder1\**" />
+    <None Remove="DTOs\NewFolder1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="efpt.config.json.user" />
   </ItemGroup>
 

@@ -1,27 +1,34 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
-namespace server.utils
+namespace server.Helpers
 {
     public class RandomToken
     {
-        public string GenerateSecureRandomToken()
+        /// <summary>
+        /// Generates 32 cryptographically secure random bytes and converts it to a clean URL-friendly hex string.
+        /// </summary>
+        public static string GenerateSecureToken()
         {
-            // Generates 32 random bytes and converts it to a clean URL-friendly hex string
             byte[] randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-
-            return Convert.ToHexString(randomNumber).ToLower();
+            return Convert.ToHexString(randomNumber).ToLowerInvariant();
         }
 
-        public string ComputeSha256Hash(string rawData)
+        /// <summary>
+        /// Computes standard SHA-256 one-way cryptographic hash of incoming data.
+        /// </summary>
+        public static string ComputeHash(string rawData)
         {
-            // Standard SHA-256 one-way hashing function
-            using var sha256Hash = SHA256.Create();
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-            return Convert.ToHexString(bytes).ToLower();
+            if (string.IsNullOrEmpty(rawData)) return string.Empty;
+            using var sha256 = SHA256.Create();
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+            return Convert.ToHexString(bytes).ToLowerInvariant();
         }
+
+        // Instance methods kept for backwards compatibility
+        public string GenerateSecureRandomToken() => GenerateSecureToken();
+        public string ComputeSha256Hash(string rawData) => ComputeHash(rawData);
     }
 }

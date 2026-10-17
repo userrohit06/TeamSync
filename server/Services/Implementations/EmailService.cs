@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using server.Configuration;
 using server.Services.Interfaces;
@@ -20,7 +20,7 @@ namespace server.Services.Implementations
         public async Task SendForgotPasswordEmailAsync(string toEmail, string userName, string resetLink)
         {
             // 1. Locate and read the HTML template
-            var templatePath = Path.Combine(this._env.ContentRootPath, "Templates", "FogotPasswordEmail.html");
+            var templatePath = Path.Combine(this._env.ContentRootPath, "Templates", "ForgotPasswordEmail.html");
 
             if (!File.Exists(templatePath))
             {

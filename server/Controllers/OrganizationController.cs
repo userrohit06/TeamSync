@@ -1,406 +1,239 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using server.Controllers.Common;
 using server.DTOs.Common;
 using server.DTOs.Organization;
-using server.Models;
+using server.Helpers;
 using server.Services.Interfaces;
-using System.Security.Claims;
 
 namespace server.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
-    [ApiController]
-    public class OrganizationController : ControllerBase
+    public class OrganizationController : BaseApiController
     {
         private readonly IOrganizationService _orgService;
 
         public OrganizationController(IOrganizationService organizationService)
         {
-            this._orgService = organizationService;
+            _orgService = organizationService;
         }
 
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateOrganizationRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Invalid token or UserId"
-                });
+                return UnauthorizedResponse("Invalid token or user ID");
             }
 
-            var result = await this._orgService.CreateOrganizationAsync(request, currentUserId, ct);
-
-            return StatusCode(result.Status, result);
+            var result = await _orgService.CreateOrganizationAsync(request, currentUserId, ct);
+            return HandleResult(result);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetOrganizations([FromQuery] CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized user access"
-                });
+                return UnauthorizedResponse("Unauthorized user access");
             }
 
-            var result = await this._orgService.GetOrganizationsAsync(currentUserId, filter, ct);
-            return StatusCode(result.Status, result);
+            var result = await _orgService.GetOrganizationsAsync(currentUserId, filter, ct);
+            return HandleResult(result);
         }
 
         [HttpGet("{organizationId:int}")]
         public async Task<IActionResult> GetById(int organizationId, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized user access"
-                });
+                return UnauthorizedResponse("Unauthorized user access");
             }
 
-            var result = await this._orgService.GetOrganizationByIdAsync(organizationId, currentUserId, ct);
-
-            return StatusCode(result.Status, result);
+            var result = await _orgService.GetOrganizationByIdAsync(organizationId, currentUserId, ct);
+            return HandleResult(result);
         }
 
         [HttpPut("{organizationId:int}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update(int organizationId, [FromForm] UpdateOrganizationReqeustDTO request, CancellationToken ct)
+        public async Task<IActionResult> Update(int organizationId, [FromForm] UpdateOrganizationRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            if (CurrentUserId is not int userId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
             try
             {
-                var result = await this._orgService.UpdateOrganizationAsync(organizationId, userId, request, ct);
-                return StatusCode(result.Status, result);
+                var result = await _orgService.UpdateOrganizationAsync(organizationId, userId, request, ct);
+                return HandleResult(result);
             }
-            catch(Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse
-                {
-                    Status = 401,
-                    Message = ex.Message
-                });
-            }
-            catch(Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50002)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
-                {
-                    Status = 401,
-                    Message = ex.Message
-                });
-            }
-            catch(ArgumentException ex)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50002 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
         [HttpDelete("{organizationId:int}")]
         public async Task<IActionResult> Delete(int organizationId, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            if (CurrentUserId is not int userId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 404,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
             try
             {
-                var result = await this._orgService.SoftDeleteOrganizationAsync(organizationId, userId, ct);
-                return StatusCode(result.Status, result);
+                var result = await _orgService.SoftDeleteOrganizationAsync(organizationId, userId, ct);
+                return HandleResult(result);
             }
-            catch(Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse
-                {
-                    Status = 404,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50002)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
-                {
-                    Status = StatusCodes.Status403Forbidden,
-                    Message = ex.Message
-                });
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, new ApiResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50002 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
         [HttpGet("{organizationId:int}/members")]
         public async Task<IActionResult> GetMembers(int organizationId, [FromQuery] CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            if (CurrentUserId is not int userId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
-            var result = await this._orgService.GetMembersAsync(organizationId, userId, filter, ct);
-            return StatusCode(result.Status, result);
+            var result = await _orgService.GetMembersAsync(organizationId, userId, filter, ct);
+            return HandleResult(result);
         }
 
         [HttpPost("{organizationId:int}/members/invite")]
         public async Task<IActionResult> AddMember(int organizationId, [FromBody] AddMemberRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
             try
             {
-                var result = await this._orgService.AddMemberAsync(organizationId, request, currentUserId, ct);
-                return StatusCode(result.Status, result);
+                var result = await _orgService.AddMemberAsync(organizationId, request, currentUserId, ct);
+                return HandleResult(result);
             }
-            catch(Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse
-                {
-                    Status = 401,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50002)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
-                {
-                    Status = 403,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50003 or 50004 or 50005 or 50006)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 401,
-                    Message = ex.Message
-                });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50002 },
+                    badRequestNumbers: new[] { 50003, 50004, 50005, 50006 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
         [HttpPut("{organizationId:int}/members/{targetUserId:int}/role")]
         public async Task<IActionResult> UpdateRole([FromRoute] int organizationId, [FromRoute] int targetUserId, [FromBody] UpdateMemberRoleRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int callerUserId))
+            if (CurrentUserId is not int callerUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
             try
             {
-                var result = await this._orgService.UpdateMemberRoleAsync(
+                var result = await _orgService.UpdateMemberRoleAsync(
                     organizationId,
                     callerUserId,
                     targetUserId: targetUserId,
                     newRoleId: request.RoleId,
                     ct: ct
                 );
-
-                return StatusCode(result.Status, result);
+                return HandleResult(result);
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse
-                {
-                    Status = 404,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50004 or 50007 or 50008 or 50009)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
-                {
-                    Status = StatusCodes.Status403Forbidden,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50003 or 50005 or 50006)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50004, 50007, 50008, 50009 },
+                    badRequestNumbers: new[] { 50002, 50003, 50005, 50006 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
-        [HttpDelete("{targetUserId:int}/members/remove")]
+        [HttpDelete("{organizationId:int}/members/{targetUserId:int}/remove")]
         public async Task<IActionResult> RemoveMember(int organizationId, int targetUserId, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int callerUserId))
+            if (CurrentUserId is not int callerUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Unauthorized access"
-                });
+                return UnauthorizedResponse("Unauthorized access");
             }
 
             try
             {
-                var result = await this._orgService.RemoveOrLeaveMemberAsync(
+                var result = await _orgService.RemoveOrLeaveMemberAsync(
                     organizationId,
                     callerUserId,
                     targetUserId,
                     ct
                 );
-
-                return StatusCode(result.Status, result);
+                return HandleResult(result);
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse
-                {
-                    Status = 404,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50006 or 50007 or 50008)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse
-                {
-                    Status = StatusCodes.Status403Forbidden,
-                    Message = ex.Message
-                });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50003 or 50004 or 50005)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50002, 50006, 50007, 50008 },
+                    badRequestNumbers: new[] { 50003, 50004, 50005 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
         [HttpPost("{id:int}/transfer-ownership")]
         public async Task<IActionResult> TransferOwnership(int id, [FromBody] TransferOwnershipRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new { message = "Invalid token or user ID not found in claims." });
+                return UnauthorizedResponse("Invalid token or user ID not found in claims.");
             }
 
             try
             {
-                var result = await this._orgService.TransferOwnershipAsync(id, currentUserId, request, ct);
-                return StatusCode(result.Status, result);
+                var result = await _orgService.TransferOwnershipAsync(id, currentUserId, request, ct);
+                return HandleResult(result);
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+            catch (SqlException ex)
             {
-                return NotFound(new ApiResponse{Status = 404, Message = ex.Message });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50003)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse { Status = 403, Message = ex.Message });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50004 or 50005)
-            {
-                return BadRequest(new ApiResponse { Status = 400, Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50003 },
+                    badRequestNumbers: new[] { 50002, 50004, 50005 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
 
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles(CancellationToken ct, [FromQuery] bool excludeOwner = false)
         {
-            var result = await this._orgService.GetRolesAsync(ct, excludeOwner);
-
-            return StatusCode(result.Status, result);
+            var result = await _orgService.GetRolesAsync(ct, excludeOwner);
+            return HandleResult(result);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace server.DTOs.Organization
+namespace server.DTOs.Organization
 {
     public record UpdatedMemberRoleResponseDTO(
         int OrganizationMemberId,
@@ -8,7 +8,7 @@
         string FullName,
         string? ProfilePhoto,
         int RoleId,
-        int RoleName,
+        string RoleName,
         string RoleDescription,
         string MembershipStatus,
         DateTime JoinedAt,

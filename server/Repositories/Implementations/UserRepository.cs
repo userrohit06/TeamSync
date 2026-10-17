@@ -1,14 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using server.DTOs.Common;
+using server.DTOs.User;
+using server.DTOs.Workspace;
+using server.Helpers;
 using server.Models;
 using server.Repositories.Interfaces;
+using System.Data;
 
 namespace server.Repositories.Implementations
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepository, IUserRepository
     {
         private readonly TeamSyncContext _dbContext;
 
-        public UserRepository(TeamSyncContext teamSyncContext)
+        public UserRepository(TeamSyncContext teamSyncContext, IConfiguration config) : base(config)
         {
             this._dbContext = teamSyncContext;
         }
@@ -37,6 +43,35 @@ namespace server.Repositories.Implementations
                 user => user.GoogleId == googleId &&
                 user.IsActive &&
                 !user.IsDeleted, ct);
+        }
+
+        public async Task<CursorPagedResult<UserResponseDTO>> GetUsersAsync(CursorPaginationFilterDTO filter, CancellationToken ct, string mode = "All")
+        {
+            var cursorPayload = CursorHelper.Decode<UserKeysetCursor>(filter.Cursor);
+
+            using var connection = CreateConnection();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@PageSize", filter.PageSize);
+            parameters.Add("@SearchTerm", filter.SearchTerm);
+            parameters.Add("@CursorCreatedAt", cursorPayload?.CreatedAt);
+            parameters.Add("@CursorUserId", cursorPayload?.userId);
+            parameters.Add("@Mode", mode);
+
+            var command = new CommandDefinition(
+                commandText: "usp_Users_Paged",
+                parameters: parameters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            var rawResult = (await connection.QueryAsync<UserResponseDTO>(command)).ToList();
+
+            return CursorPagedResult<UserResponseDTO>.Create(
+                rawItems: rawResult,
+                requestedPageSize: filter.PageSize,
+                cursorSelector: item => CursorHelper.Encode(new UserKeysetCursor(item.CreatedAt, item.UserId))
+            );
         }
 
         public async Task<int> Save()

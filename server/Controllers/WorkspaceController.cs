@@ -1,64 +1,69 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using server.Controllers.Common;
 using server.DTOs.Common;
 using server.DTOs.Workspace;
+using server.Helpers;
 using server.Services.Interfaces;
-using System.Security.Claims;
 
 namespace server.Controllers
 {
     [Authorize]
-    [ApiController]
     [Route("api/organizations/{organizationId:int}/workspaces")]
-    public class WorkspaceController : ControllerBase
+    public class WorkspaceController : BaseApiController
     {
         private readonly IWorkspaceService _workspaceService;
 
         public WorkspaceController(IWorkspaceService workspaceService)
         {
-            this._workspaceService = workspaceService;
+            _workspaceService = workspaceService;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateWorkspace(int organizationId, [FromBody] CreateWorkspaceRequestDTO request, CancellationToken ct)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+            if (CurrentUserId is not int currentUserId)
             {
-                return Unauthorized(new ApiResponse
-                {
-                    Status = 401,
-                    Message = "Invalid token or user"
-                });
+                return UnauthorizedResponse("Invalid token or user");
             }
 
             try
             {
-                var result = await this._workspaceService.CreateWorkspaceAsync(organizationId, currentUserId, request, ct);
+                var result = await _workspaceService.CreateWorkspaceAsync(organizationId, currentUserId, request, ct);
+                return HandleResult(result);
+            }
+            catch (SqlException ex)
+            {
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    notFoundNumbers: new[] { 50001 },
+                    forbiddenNumbers: new[] { 50002, 50003 }
+                );
+                return StatusCode(statusCode, apiResponse);
+            }
+        }
 
-                return StatusCode(result.Status, result);
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50001)
+        [HttpGet]
+        public async Task<IActionResult> GetWorkspaces(int organizationId, [FromQuery] CursorPaginationFilterDTO filter, CancellationToken ct)
+        {
+            if(CurrentUserId is not int currentUserId)
             {
-                return NotFound(new ApiResponse{ Status = 404, Message = ex.Message });
+                return UnauthorizedResponse("Invalid token or user");
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number is 50002 or 50003)
+
+            try
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
+                var result = await this._workspaceService.GetWorkspacesAsync(organizationId, currentUserId, filter, ct);
+                return HandleResult(result);
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 50004)
+            catch(SqlException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse { Status = 500, Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
+                var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
+                    ex,
+                    forbiddenNumbers: new[] { 50001 }
+                );
+                return StatusCode(statusCode, apiResponse);
             }
         }
     }
