@@ -21,5 +21,30 @@ namespace server.Repositories.Interfaces
             CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
+
+        Task<WorkspaceDetailsDTO> GetWorkspaceDetailsAsync(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            CancellationToken ct
+        );
+
+        Task<WorkspaceDetailsDTO> UpdateWorkspaceAsync(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            string? name,
+            string? baseSlug,
+            string? description,
+            bool? isPrivate,
+            CancellationToken ct
+        );
+
+        Task<bool> SoftDeleteWorkspaceAsync(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            CancellationToken ct
+        );
     }
 }
