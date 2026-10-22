@@ -19,5 +19,27 @@ namespace server.Services.Interfaces
             CursorPaginationFilterDTO filter,
             CancellationToken ct
         );
+
+        Task<ApiResponse<WorkspaceDetailsDTO>> GetWorkspaceById(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            CancellationToken ct
+        );
+
+        Task<ApiResponse<WorkspaceDetailsDTO>> UpdateWorkspaceById(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            UpdateWorkspaceRequest request,
+            CancellationToken ct
+        );
+
+        Task<ApiResponse> SoftDeleteWorkspaceById(
+            int workspaceId,
+            int organizationId,
+            int currentUserId,
+            CancellationToken ct
+        );
     }
 }
