@@ -91,7 +91,39 @@
          "ObjectType": 1
       },
       {
+         "Name": "[dbo].[usp_Workspace_Details]",
+         "ObjectType": 1
+      },
+      {
          "Name": "[dbo].[usp_Workspace_Paged]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Workspace_SoftDelete]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Workspace_TransferOwnership]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Workspace_Update]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_WorkspaceMember_Add]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_WorkspaceMember_List]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_WorkspaceMember_RemoveOrLeave]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_WorkspaceMember_UpdateRole]",
          "ObjectType": 1
       }
    ],

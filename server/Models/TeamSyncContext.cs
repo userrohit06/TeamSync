@@ -60,6 +60,8 @@ public partial class TeamSyncContext : DbContext
 
         modelBuilder.Entity<OrganizationMember>(entity =>
         {
+            entity.HasIndex(e => new { e.OrganizationId, e.UserId, e.MembershipStatus }, "IX_OganizationMembers_OrgId_UserId_Active");
+
             entity.HasIndex(e => new { e.OrganizationId, e.UserId }, "UQ_OrgMembers_Org_User").IsUnique();
 
             entity.Property(e => e.JoinedAt)
@@ -133,6 +135,8 @@ public partial class TeamSyncContext : DbContext
 
         modelBuilder.Entity<Workspace>(entity =>
         {
+            entity.HasIndex(e => new { e.OrganizationId, e.WorkspaceId, e.IsDeleted, e.IsActive }, "IX_Workspaces_OrgId_WorkspaceId_Active");
+
             entity.HasIndex(e => new { e.OrganizationId, e.IsDeleted, e.IsActive }, "IX_Workspaces_OrganizationId_IsDeleted");
 
             entity.HasIndex(e => new { e.OrganizationId, e.Slug }, "UQ_Workspaces_OrganizationId_IsDeleted")
@@ -181,6 +185,8 @@ public partial class TeamSyncContext : DbContext
         modelBuilder.Entity<WorkspaceMember>(entity =>
         {
             entity.HasIndex(e => e.UserId, "IX_WorkspaceMembers_UserId");
+
+            entity.HasIndex(e => new { e.WorkspaceId, e.UserId }, "IX_WorkspaceMembers_WorkspaceId_UserId");
 
             entity.HasIndex(e => new { e.WorkspaceId, e.UserId }, "UQ_WorkspaceMembers_WorkspaceId_UserId").IsUnique();
 

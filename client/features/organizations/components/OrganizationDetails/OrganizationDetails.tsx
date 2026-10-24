@@ -219,7 +219,10 @@ export const OrganizationDetails = ({
             </p>
 
             <div className={styles.actionGrid}>
-              <Link href="/workspaces" className={styles.navBlock}>
+              <Link
+                href={`/organizations/${org.organizationId}/workspaces`}
+                className={styles.navBlock}
+              >
                 <Briefcase size={20} />
                 <div>
                   <strong>Workspaces</strong>

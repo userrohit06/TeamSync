@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
 
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -38,21 +38,21 @@
 /* Sizes */
 
 .small {
-  min-height: 34px;
-  padding: 0 12px;
-  font-size: 13px;
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 .medium {
-  min-height: 40px;
-  padding: 0 16px;
-  font-size: 14px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
 }
 
 .large {
-  min-height: 46px;
-  padding: 0 20px;
-  font-size: 15px;
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
 }
 
 /* Variants */
@@ -107,8 +107,8 @@
 }
 
 .loader {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border: 2px solid currentColor;
   border-right-color: transparent;
   border-radius: 50%;

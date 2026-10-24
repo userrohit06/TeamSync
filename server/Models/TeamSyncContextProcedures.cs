@@ -566,6 +566,44 @@ namespace server.Models
             return _;
         }
 
+        public virtual async Task<List<usp_Workspace_DetailsResult>> usp_Workspace_DetailsAsync(int? currentUserId, int? organizationId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Workspace_DetailsResult>("EXEC @returnValue = [dbo].[usp_Workspace_Details] @CurrentUserId = @CurrentUserId, @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
         public virtual async Task<List<usp_Workspace_PagedResult>> usp_Workspace_PagedAsync(int? organizationId, int? callerUserId, DateTime? cursorCreatedAt, int? cursorWorkspaceId, int? pageSize, string searchTerm, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
         {
             var parameterreturnValue = new SqlParameter
@@ -617,6 +655,361 @@ namespace server.Models
                 parameterreturnValue,
             };
             var _ = await _context.SqlQueryAsync<usp_Workspace_PagedResult>("EXEC @returnValue = [dbo].[usp_Workspace_Paged] @OrganizationId = @OrganizationId, @CallerUserId = @CallerUserId, @CursorCreatedAt = @CursorCreatedAt, @CursorWorkspaceId = @CursorWorkspaceId, @PageSize = @PageSize, @SearchTerm = @SearchTerm", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<int> usp_Workspace_SoftDeleteAsync(int? workspaceId, int? organizationId, int? currentUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.Database.ExecuteSqlRawAsync("EXEC @returnValue = [dbo].[usp_Workspace_SoftDelete] @WorkspaceId = @WorkspaceId, @OrganizationId = @OrganizationId, @CurrentUserId = @CurrentUserId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Workspace_TransferOwnershipResult>> usp_Workspace_TransferOwnershipAsync(int? organizationId, int? workspaceId, int? currentOwnerUserId, int? newOwnerUserId, int? previousOwnerRoleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentOwnerUserId",
+                    Value = currentOwnerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "NewOwnerUserId",
+                    Value = newOwnerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "PreviousOwnerRoleId",
+                    Value = previousOwnerRoleId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Workspace_TransferOwnershipResult>("EXEC @returnValue = [dbo].[usp_Workspace_TransferOwnership] @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId, @CurrentOwnerUserId = @CurrentOwnerUserId, @NewOwnerUserId = @NewOwnerUserId, @PreviousOwnerRoleId = @PreviousOwnerRoleId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Workspace_UpdateResult>> usp_Workspace_UpdateAsync(int? workspaceId, int? organizationId, int? currentUserId, string name, string baseSlug, string description, bool? isPrivate, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Name",
+                    Size = 200,
+                    Value = name ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "BaseSlug",
+                    Size = 120,
+                    Value = baseSlug ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Description",
+                    Size = 1000,
+                    Value = description ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "IsPrivate",
+                    Value = isPrivate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Workspace_UpdateResult>("EXEC @returnValue = [dbo].[usp_Workspace_Update] @WorkspaceId = @WorkspaceId, @OrganizationId = @OrganizationId, @CurrentUserId = @CurrentUserId, @Name = @Name, @BaseSlug = @BaseSlug, @Description = @Description, @IsPrivate = @IsPrivate", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_WorkspaceMember_AddResult>> usp_WorkspaceMember_AddAsync(int? organizationId, int? workspaceId, int? callerUserId, string targetEmail, int? roleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CallerUserId",
+                    Value = callerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "TargetEmail",
+                    Size = 300,
+                    Value = targetEmail ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "RoleId",
+                    Value = roleId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_WorkspaceMember_AddResult>("EXEC @returnValue = [dbo].[usp_WorkspaceMember_Add] @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId, @CallerUserId = @CallerUserId, @TargetEmail = @TargetEmail, @RoleId = @RoleId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_WorkspaceMember_ListResult>> usp_WorkspaceMember_ListAsync(int? organizationId, int? workspaceId, int? currentUserId, int? pageSize, int? cursorUserId, string searchTerm, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "PageSize",
+                    Value = pageSize ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorUserId",
+                    Value = cursorUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "SearchTerm",
+                    Size = 200,
+                    Value = searchTerm ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_WorkspaceMember_ListResult>("EXEC @returnValue = [dbo].[usp_WorkspaceMember_List] @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId, @CurrentUserId = @CurrentUserId, @PageSize = @PageSize, @CursorUserId = @CursorUserId, @SearchTerm = @SearchTerm", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_WorkspaceMember_RemoveOrLeaveResult>> usp_WorkspaceMember_RemoveOrLeaveAsync(int? organizationId, int? workspaceId, int? callerUserId, int? targetUserId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CallerUserId",
+                    Value = callerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "TargetUserId",
+                    Value = targetUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_WorkspaceMember_RemoveOrLeaveResult>("EXEC @returnValue = [dbo].[usp_WorkspaceMember_RemoveOrLeave] @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId, @CallerUserId = @CallerUserId, @TargetUserId = @TargetUserId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_WorkspaceMember_UpdateRoleResult>> usp_WorkspaceMember_UpdateRoleAsync(int? organizationId, int? workspaceId, int? callerUserId, int? targetUserId, int? newRoleId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CallerUserId",
+                    Value = callerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "TargetUserId",
+                    Value = targetUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "NewRoleId",
+                    Value = newRoleId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_WorkspaceMember_UpdateRoleResult>("EXEC @returnValue = [dbo].[usp_WorkspaceMember_UpdateRole] @OrganizationId = @OrganizationId, @WorkspaceId = @WorkspaceId, @CallerUserId = @CallerUserId, @TargetUserId = @TargetUserId, @NewRoleId = @NewRoleId", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 

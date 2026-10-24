@@ -5,6 +5,7 @@ using server.Controllers.Common;
 using server.DTOs.Common;
 using server.DTOs.Workspace;
 using server.Helpers;
+using server.Models;
 using server.Services.Interfaces;
 
 namespace server.Controllers
@@ -47,17 +48,17 @@ namespace server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWorkspaces(int organizationId, [FromQuery] CursorPaginationFilterDTO filter, CancellationToken ct)
         {
-            if(CurrentUserId is not int currentUserId)
+            if (CurrentUserId is not int currentUserId)
             {
                 return UnauthorizedResponse("Invalid token or user");
             }
 
             try
             {
-                var result = await this._workspaceService.GetWorkspacesAsync(organizationId, currentUserId, filter, ct);
+                var result = await _workspaceService.GetWorkspacesAsync(organizationId, currentUserId, filter, ct);
                 return HandleResult(result);
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 var (statusCode, apiResponse) = SqlExceptionHelper.MapToApiResponse(
                     ex,
