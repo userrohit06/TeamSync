@@ -63,6 +63,26 @@ namespace server.Repositories.Implementations
             return result ?? throw new InvalidOperationException("Failed to get workspace details");
         }
 
+        public async Task<WorkspaceDetailsDTO> GetWorkspaceDetailsAsync(int workspaceId, int organizationId, int currentUserId, CancellationToken ct)
+        {
+            using var connection = CreateConnection();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CurrentUserId", currentUserId);
+            parameters.Add("@WorkspaceId", workspaceId);
+            parameters.Add("@OrganizationId", organizationId);
+
+            var command = new CommandDefinition(
+                commandText: "usp_Workspace_Details",
+                parameters: parameters,
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: ct
+            );
+
+            var result = await connection.QuerySingleOrDefaultAsync<WorkspaceDetailsDTO>(command);
+            return result ?? throw new InvalidOperationException("Failed to get workspace details");
+        }
+
         public async Task<CursorPagedResult<WorkspaceResponseDTO>> GetWorkspacesCursorPagedAsync(int organizationId, int callerUserId, CursorPaginationFilterDTO filter, CancellationToken ct)
         {
             var cursorPayload = CursorHelper.Decode<WorkspacekeysetCursor>(filter.Cursor);
