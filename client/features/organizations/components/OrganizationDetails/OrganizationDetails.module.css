@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.15rem;
   width: 100%;
   margin-inline: auto;
 }
@@ -10,7 +10,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
   font-weight: 500;
   transition: color 0.15s ease;
@@ -27,8 +27,8 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1.75rem 2rem;
-  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  gap: 1.15rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -45,20 +45,20 @@
 .heroMain {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .logo {
-  width: 68px;
-  height: 68px;
+  width: 54px;
+  height: 54px;
   border-radius: var(--radius-md);
   object-fit: cover;
   border: 1px solid var(--border);
 }
 
 .logoFallback {
-  width: 68px;
-  height: 68px;
+  width: 54px;
+  height: 54px;
   border-radius: var(--radius-md);
   background-color: var(--surface-secondary);
   border: 1px solid var(--border);
@@ -66,7 +66,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   color: var(--primary);
   flex-shrink: 0;
 }

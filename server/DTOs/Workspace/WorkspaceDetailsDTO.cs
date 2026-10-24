@@ -14,7 +14,7 @@
         string CreatedByUserName,
         int? UpdatedByUserId,
         string? UpdatedByUserName,
-        string CurrrentUserWorkspaceRole,
+        string CurrentUserWorkspaceRole,
         int TotalMembers
     );
 }

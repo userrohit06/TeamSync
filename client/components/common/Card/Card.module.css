@@ -13,7 +13,7 @@
 }
 
 .card:hover {
-  border-color: color-mix(in srgb, var(--primary) 18%, transparennt);
+  border-color: color-mix(in srgb, var(--primary) 18%, transparent);
 
   box-shadow: var(--shadow-md);
 }
@@ -23,23 +23,23 @@
 }
 
 .small {
-  padding: 14px;
+  padding: 10px 12px;
 }
 
 .medium {
-  padding: 20px;
+  padding: 16px;
 }
 
 .large {
-  padding: 26px;
+  padding: 20px;
 }
 
 @media (max-width: 600px) {
   .medium {
-    padding: 16px;
+    padding: 14px;
   }
 
   .large {
-    padding: 20px;
+    padding: 16px;
   }
 }

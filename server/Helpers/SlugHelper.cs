@@ -1,17 +1,12 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace server.Helpers
 {
-    public static partial class SlugHelper
+    public static class SlugHelper
     {
-        [GeneratedRegex(@"[^a-z0-9\s-]")]
-        private static partial Regex DisallowedCharactersRegex();
-
-        [GeneratedRegex(@"\s+")]
-        private static partial Regex MultipleWhitespacesRegex();
-
-        [GeneratedRegex(@"-+")]
-        private static partial Regex MultipleHyphenRegex();
+        private static readonly Regex DisallowedCharactersRegex = new(@"[^a-z0-9\s-]", RegexOptions.Compiled);
+        private static readonly Regex MultipleWhitespacesRegex = new(@"\s+", RegexOptions.Compiled);
+        private static readonly Regex MultipleHyphenRegex = new(@"-+", RegexOptions.Compiled);
 
         public static string GenerateSlug(string input, int maxLength = 100)
         {
@@ -21,15 +16,15 @@ namespace server.Helpers
             string slug = input.Trim().ToLowerInvariant();
 
             // strip disallowed characters (keep alphanumeric, space, hyphens)
-            slug = DisallowedCharactersRegex().Replace(slug, "");
+            slug = DisallowedCharactersRegex.Replace(slug, "");
 
             // collapse multiple whitespace characters into single hyphen
-            slug = MultipleWhitespacesRegex().Replace(slug, "-");
+            slug = MultipleWhitespacesRegex.Replace(slug, "-");
 
             // collapse multiple hyphens
-            slug = MultipleHyphenRegex().Replace(slug, "-").Trim('-');
+            slug = MultipleHyphenRegex.Replace(slug, "-").Trim('-');
 
-            if(slug.Length > maxLength)
+            if (slug.Length > maxLength)
             {
                 slug = slug[..maxLength].TrimEnd('-');
             }

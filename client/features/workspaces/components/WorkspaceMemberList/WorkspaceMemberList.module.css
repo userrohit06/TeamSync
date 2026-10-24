@@ -1,0 +1,227 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.15s ease;
+  width: fit-content;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.searchInput {
+  flex: 1;
+  max-width: 380px;
+}
+
+.pageSizeSelect {
+  width: 5rem;
+}
+
+/* User cell */
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: var(--text-primary);
+}
+
+.userEmail {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Role styling */
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  width: fit-content;
+}
+
+.adminBadge {
+  background: var(--glow-primary);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--surface-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.explicitBadge {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.dateCell {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Pagination bar */
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.pageInfo {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.fetchingBadge {
+  font-size: 0.72rem;
+  color: var(--primary);
+  background: var(--glow-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paginationBtn {
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: var(--surface-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.paginationBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.actionRow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+  background: var(--surface-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.removeActionBtn:hover {
+  background: color-mix(in srgb, var(--error) 10%, var(--surface));
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.errorContainer h3 {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.errorContainer p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.retryBtn {
+  margin-top: 0.5rem;
+  padding: 6px 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+}

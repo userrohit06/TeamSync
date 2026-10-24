@@ -8,6 +8,7 @@
         string? Description,
         bool IsPrivate,
         DateTime CreatedAt,
-        string CurrentUserWorkspaceRole
+        string CurrentUserWorkspaceRole,
+        int MemberCount
     );
 }

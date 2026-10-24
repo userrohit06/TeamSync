@@ -1,6 +1,6 @@
-﻿namespace server.DTOs.Workspace
+namespace server.DTOs.Workspace
 {
     public record WorkspaceMemberKeysetCursor(
-        int userId
+        int UserId
     );
 }
