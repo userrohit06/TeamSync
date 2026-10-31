@@ -1,0 +1,266 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  width: fit-content;
+  transition: color 0.15s ease;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.archivedBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--warning);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 24px;
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.heroMain {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.iconFallback {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px var(--glow-primary);
+}
+
+.heroDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heroTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.projectTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.projectSlug {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.projectDescription {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 6px 0 0 0;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.deleteButton {
+  color: var(--error) !important;
+}
+
+.deleteButton:hover {
+  background-color: rgba(225, 29, 72, 0.1) !important;
+  border-color: var(--error) !important;
+}
+
+.tabsRow {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.tabButton {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.tabButton:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-secondary);
+}
+
+.tabActive {
+  color: var(--primary);
+  background-color: var(--surface-secondary);
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sectionCard {
+  padding: 20px;
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(220, 231, 240, 0.4);
+}
+
+.label {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.value {
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.roleHighlight {
+  font-weight: 600;
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background-color: rgba(124, 58, 237, 0.1);
+  font-size: 12px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.statusPill:hover {
+  opacity: 0.85;
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.loadingContainer,
+.errorState {
+  padding: 60px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

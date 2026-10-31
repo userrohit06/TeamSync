@@ -1,0 +1,134 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--glow-primary);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--glow-primary);
+}
+
+.visibilityToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.visibilityOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background-color: var(--surface);
+  transition: all 0.15s ease;
+}
+
+.visibilityOption:hover {
+  border-color: var(--primary);
+}
+
+.visibilityActive {
+  border-color: var(--primary);
+  background-color: var(--surface-secondary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.visibilityTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.visibilityDesc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.memberSelection {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-secondary);
+}
+
+.memberCheckItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background-color: var(--surface);
+}
+
+.memberCheckItem:hover {
+  background-color: var(--border);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
