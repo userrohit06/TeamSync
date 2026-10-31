@@ -149,6 +149,7 @@ namespace server.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
 
             return services;
         }
@@ -163,6 +164,7 @@ namespace server.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<IWorkspaceService, WorkspaceService>();
+            services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IUserService, UserService>();
 
             return services;
