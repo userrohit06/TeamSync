@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
+  FolderKanban,
   Globe,
   Lock,
   Pencil,
@@ -131,6 +132,12 @@ export const WorkspaceDetails = ({
 
         {/* Action Buttons */}
         <div className={styles.heroActions}>
+          <Link href={`/workspaces/${ws.workspaceId}/projects?orgId=${organizationId}`}>
+            <Button variant="secondary" size="small">
+              <FolderKanban size={14} /> Projects
+            </Button>
+          </Link>
+
           <Link href={`/workspaces/${ws.workspaceId}/members?orgId=${organizationId}`}>
             <Button variant="secondary" size="small">
               <Users size={14} /> Members ({ws.totalMembers})
@@ -241,6 +248,17 @@ export const WorkspaceDetails = ({
           </p>
 
           <div className={styles.actionGrid}>
+            <Link
+              href={`/workspaces/${ws.workspaceId}/projects?orgId=${organizationId}`}
+              className={styles.navBlock}
+            >
+              <FolderKanban size={18} />
+              <div>
+                <strong>Workspace Projects</strong>
+                <span>View, manage, and create deliverables</span>
+              </div>
+            </Link>
+
             <Link
               href={`/workspaces/${ws.workspaceId}/members?orgId=${organizationId}`}
               className={styles.navBlock}
