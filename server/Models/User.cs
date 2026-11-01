@@ -45,6 +45,32 @@ public partial class User
 
     public virtual ICollection<Organization> OrganizationUpdatedByUsers { get; set; } = new List<Organization>();
 
+    public virtual ICollection<Project> ProjectArchivedByUsers { get; set; } = new List<Project>();
+
+    public virtual ICollection<Project> ProjectCreatedByUsers { get; set; } = new List<Project>();
+
+    public virtual ICollection<Project> ProjectDeletedByUsers { get; set; } = new List<Project>();
+
+    public virtual ICollection<ProjectMember> ProjectMemberAddedByUsers { get; set; } = new List<ProjectMember>();
+
+    public virtual ICollection<ProjectMember> ProjectMemberUsers { get; set; } = new List<ProjectMember>();
+
+    public virtual ICollection<Project> ProjectOwnerUsers { get; set; } = new List<Project>();
+
+    public virtual ICollection<Project> ProjectUpdatedByUsers { get; set; } = new List<Project>();
+
+    public virtual ICollection<WorkItemAssignee> WorkItemAssigneeAssignedByUsers { get; set; } = new List<WorkItemAssignee>();
+
+    public virtual ICollection<WorkItemAssignee> WorkItemAssigneeUsers { get; set; } = new List<WorkItemAssignee>();
+
+    public virtual ICollection<WorkItemComment> WorkItemComments { get; set; } = new List<WorkItemComment>();
+
+    public virtual ICollection<WorkItem> WorkItemCreatedByUsers { get; set; } = new List<WorkItem>();
+
+    public virtual ICollection<WorkItem> WorkItemDeletedByUsers { get; set; } = new List<WorkItem>();
+
+    public virtual ICollection<WorkItem> WorkItemUpdatedByUsers { get; set; } = new List<WorkItem>();
+
     public virtual ICollection<Workspace> WorkspaceCreatedByUsers { get; set; } = new List<Workspace>();
 
     public virtual ICollection<Workspace> WorkspaceDeletedByUsers { get; set; } = new List<Workspace>();

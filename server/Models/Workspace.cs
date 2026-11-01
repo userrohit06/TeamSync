@@ -41,6 +41,8 @@ public partial class Workspace
 
     public virtual Organization Organization { get; set; }
 
+    public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
+
     public virtual User UpdatedByUser { get; set; }
 
     public virtual ICollection<WorkspaceMember> WorkspaceMembers { get; set; } = new List<WorkspaceMember>();
