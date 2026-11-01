@@ -6,6 +6,8 @@ using server.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -449,6 +451,808 @@ namespace server.Models
                 parameterreturnValue,
             };
             var _ = await _context.SqlQueryAsync<usp_OrganizationMember_UpdateRoleResult>("EXEC @returnValue = [dbo].[usp_OrganizationMember_UpdateRole] @OrganizationId = @OrganizationId, @CallerUserId = @CallerUserId, @TargetUserId = @TargetUserId, @NewRoleId = @NewRoleId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_ArchiveResult>> usp_Project_ArchiveAsync(int? projectId, int? currentUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_ArchiveResult>("EXEC @returnValue = [dbo].[usp_Project_Archive] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_ChangeStatusResult>> usp_Project_ChangeStatusAsync(int? projectId, int? currentUserId, int? newProjectStatusId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "NewProjectStatusId",
+                    Value = newProjectStatusId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_ChangeStatusResult>("EXEC @returnValue = [dbo].[usp_Project_ChangeStatus] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @NewProjectStatusId = @NewProjectStatusId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_ChangeVisibilityResult>> usp_Project_ChangeVisibilityAsync(int? projectId, int? currentUserId, string newVisibility, int? workspaceId, IEnumerable<IdList> initialMemberIds, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "NewVisibility",
+                    Size = 20,
+                    Value = newVisibility ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "InitialMemberIds",
+                    Value = initialMemberIds == null ? Convert.DBNull : ToDataTable(initialMemberIds) ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Structured,
+                    TypeName = "[dbo].[IdList]",
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_ChangeVisibilityResult>("EXEC @returnValue = [dbo].[usp_Project_ChangeVisibility] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @NewVisibility = @NewVisibility, @WorkspaceId = @WorkspaceId, @InitialMemberIds = @InitialMemberIds", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_CreateResult>> usp_Project_CreateAsync(int? workspaceId, int? currentUserId, string name, string baseSlug, string visibility, string description, int? projectStatusId, DateOnly? startDate, DateOnly? dueDate, IEnumerable<IdList> initialMemberIds, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Name",
+                    Size = 200,
+                    Value = name ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "BaseSlug",
+                    Size = 120,
+                    Value = baseSlug ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Visibility",
+                    Size = 20,
+                    Value = visibility ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Description",
+                    Size = 1000,
+                    Value = description ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProjectStatusId",
+                    Value = projectStatusId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "StartDate",
+                    Value = startDate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Date,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "DueDate",
+                    Value = dueDate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Date,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "InitialMemberIds",
+                    Value = initialMemberIds == null ? Convert.DBNull : ToDataTable(initialMemberIds) ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Structured,
+                    TypeName = "[dbo].[IdList]",
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_CreateResult>("EXEC @returnValue = [dbo].[usp_Project_Create] @WorkspaceId = @WorkspaceId, @CurrentUserId = @CurrentUserId, @Name = @Name, @BaseSlug = @BaseSlug, @Visibility = @Visibility, @Description = @Description, @ProjectStatusId = @ProjectStatusId, @StartDate = @StartDate, @DueDate = @DueDate, @InitialMemberIds = @InitialMemberIds", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_GetByIdResult>> usp_Project_GetByIdAsync(int? projectId, int? currentUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_GetByIdResult>("EXEC @returnValue = [dbo].[usp_Project_GetById] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_ListResult>> usp_Project_ListAsync(int? currentUserId, int? workspaceId, int? pageSize, DateTime? cursorCreatedAt, int? cursorProjectId, int? projectStatusId, string searchTerm, bool? includeArchived, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "PageSize",
+                    Value = pageSize ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorCreatedAt",
+                    Scale = 7,
+                    Value = cursorCreatedAt ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.DateTime2,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorProjectId",
+                    Value = cursorProjectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProjectStatusId",
+                    Value = projectStatusId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "SearchTerm",
+                    Size = 200,
+                    Value = searchTerm ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "IncludeArchived",
+                    Value = includeArchived ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_ListResult>("EXEC @returnValue = [dbo].[usp_Project_List] @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId, @PageSize = @PageSize, @CursorCreatedAt = @CursorCreatedAt, @CursorProjectId = @CursorProjectId, @ProjectStatusId = @ProjectStatusId, @SearchTerm = @SearchTerm, @IncludeArchived = @IncludeArchived", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_RestoreArchiveResult>> usp_Project_RestoreArchiveAsync(int? projectId, int? currentUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_RestoreArchiveResult>("EXEC @returnValue = [dbo].[usp_Project_RestoreArchive] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_RestoreDeletedResult>> usp_Project_RestoreDeletedAsync(int? projectId, int? currentUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_RestoreDeletedResult>("EXEC @returnValue = [dbo].[usp_Project_RestoreDeleted] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_SoftDeleteResult>> usp_Project_SoftDeleteAsync(int? projectId, int? currentUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_SoftDeleteResult>("EXEC @returnValue = [dbo].[usp_Project_SoftDelete] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_TransferOwnershipResult>> usp_Project_TransferOwnershipAsync(int? projectId, int? currentUserId, int? newOwnerUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "NewOwnerUserId",
+                    Value = newOwnerUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_TransferOwnershipResult>("EXEC @returnValue = [dbo].[usp_Project_TransferOwnership] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @NewOwnerUserId = @NewOwnerUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_Project_UpdateResult>> usp_Project_UpdateAsync(int? projectId, int? currentUserId, int? workspaceId, string name, string baseSlug, string description, int? projectStatusId, DateOnly? startDate, DateOnly? dueDate, bool? updateDates, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Name",
+                    Size = 200,
+                    Value = name ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "BaseSlug",
+                    Size = 120,
+                    Value = baseSlug ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Description",
+                    Size = 1000,
+                    Value = description ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProjectStatusId",
+                    Value = projectStatusId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "StartDate",
+                    Value = startDate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Date,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "DueDate",
+                    Value = dueDate ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Date,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "UpdateDates",
+                    Value = updateDates ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_Project_UpdateResult>("EXEC @returnValue = [dbo].[usp_Project_Update] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId, @Name = @Name, @BaseSlug = @BaseSlug, @Description = @Description, @ProjectStatusId = @ProjectStatusId, @StartDate = @StartDate, @DueDate = @DueDate, @UpdateDates = @UpdateDates", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_ProjectMember_AddOrAssignResult>> usp_ProjectMember_AddOrAssignAsync(int? projectId, int? currentUserId, int? targetUserId, int? projectRoleId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "TargetUserId",
+                    Value = targetUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProjectRoleId",
+                    Value = projectRoleId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_ProjectMember_AddOrAssignResult>("EXEC @returnValue = [dbo].[usp_ProjectMember_AddOrAssign] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @TargetUserId = @TargetUserId, @ProjectRoleId = @ProjectRoleId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_ProjectMember_ListResult>> usp_ProjectMember_ListAsync(int? projectId, int? currentUserId, int? workspaceId, int? pageSize, int? cursorUserId, string searchTerm, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "PageSize",
+                    Value = pageSize ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CursorUserId",
+                    Value = cursorUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "SearchTerm",
+                    Size = 200,
+                    Value = searchTerm ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.NVarChar,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_ProjectMember_ListResult>("EXEC @returnValue = [dbo].[usp_ProjectMember_List] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @WorkspaceId = @WorkspaceId, @PageSize = @PageSize, @CursorUserId = @CursorUserId, @SearchTerm = @SearchTerm", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_ProjectMember_RemoveResult>> usp_ProjectMember_RemoveAsync(int? projectId, int? currentUserId, int? targetUserId, int? workspaceId, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "ProjectId",
+                    Value = projectId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "TargetUserId",
+                    Value = targetUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "WorkspaceId",
+                    Value = workspaceId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_ProjectMember_RemoveResult>("EXEC @returnValue = [dbo].[usp_ProjectMember_Remove] @ProjectId = @ProjectId, @CurrentUserId = @CurrentUserId, @TargetUserId = @TargetUserId, @WorkspaceId = @WorkspaceId", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_ProjectRole_ListResult>> usp_ProjectRole_ListAsync(int? currentUserId, int? organizationId, bool? excludeOwner, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ExcludeOwner",
+                    Value = excludeOwner ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_ProjectRole_ListResult>("EXEC @returnValue = [dbo].[usp_ProjectRole_List] @CurrentUserId = @CurrentUserId, @OrganizationId = @OrganizationId, @ExcludeOwner = @ExcludeOwner", sqlParameters, cancellationToken);
+
+            returnValue?.SetValue(parameterreturnValue.Value);
+
+            return _;
+        }
+
+        public virtual async Task<List<usp_ProjectStatus_ListResult>> usp_ProjectStatus_ListAsync(int? currentUserId, int? organizationId, string category, bool? includeInactive, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default)
+        {
+            var parameterreturnValue = new SqlParameter
+            {
+                ParameterName = "returnValue",
+                Direction = System.Data.ParameterDirection.Output,
+                SqlDbType = System.Data.SqlDbType.Int,
+            };
+
+            var sqlParameters = new []
+            {
+                new SqlParameter
+                {
+                    ParameterName = "CurrentUserId",
+                    Value = currentUserId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "OrganizationId",
+                    Value = organizationId ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Int,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "Category",
+                    Size = 20,
+                    Value = category ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                },
+                new SqlParameter
+                {
+                    ParameterName = "IncludeInactive",
+                    Value = includeInactive ?? Convert.DBNull,
+                    SqlDbType = System.Data.SqlDbType.Bit,
+                },
+                parameterreturnValue,
+            };
+            var _ = await _context.SqlQueryAsync<usp_ProjectStatus_ListResult>("EXEC @returnValue = [dbo].[usp_ProjectStatus_List] @CurrentUserId = @CurrentUserId, @OrganizationId = @OrganizationId, @Category = @Category, @IncludeInactive = @IncludeInactive", sqlParameters, cancellationToken);
 
             returnValue?.SetValue(parameterreturnValue.Value);
 
@@ -1014,6 +1818,34 @@ namespace server.Models
             returnValue?.SetValue(parameterreturnValue.Value);
 
             return _;
+        }
+
+        private static DataTable ToDataTable<T>(IEnumerable<T> items)
+        {
+            var dataTable = new DataTable();
+            var properties = typeof(T).GetProperties();
+
+            foreach (var prop in properties)
+            {
+                var propertyType = prop.PropertyType;
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    propertyType = Nullable.GetUnderlyingType(propertyType);
+                }
+                dataTable.Columns.Add(prop.Name, propertyType);
+            }
+
+            foreach (var item in items)
+            {
+                var values = new object[properties.Length];
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    values[i] = properties[i].GetValue(item) ?? DBNull.Value;
+                }
+                dataTable.Rows.Add(values);
+            }
+
+            return dataTable;
         }
     }
 }
