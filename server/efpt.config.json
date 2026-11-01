@@ -31,7 +31,43 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ProjectMembers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProjectRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Projects]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProjectStatuses]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Users]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkItemAssignees]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkItemComments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkItemPriorities]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkItems]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkItemStatuses]",
          "ObjectType": 0
       },
       {
@@ -80,6 +116,70 @@
       },
       {
          "Name": "[dbo].[usp_OrganizationMember_UpdateRole]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_Archive]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_ChangeStatus]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_ChangeVisibility]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_Create]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_GetById]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_List]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_RestoreArchive]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_RestoreDeleted]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_SoftDelete]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_TransferOwnership]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_Project_Update]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_ProjectMember_AddOrAssign]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_ProjectMember_List]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_ProjectMember_Remove]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_ProjectRole_List]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[usp_ProjectStatus_List]",
          "ObjectType": 1
       },
       {

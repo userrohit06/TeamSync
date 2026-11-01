@@ -19,7 +19,25 @@ public partial class TeamSyncContext : DbContext
 
     public virtual DbSet<OrganizationMemberRole> OrganizationMemberRoles { get; set; }
 
+    public virtual DbSet<Project> Projects { get; set; }
+
+    public virtual DbSet<ProjectMember> ProjectMembers { get; set; }
+
+    public virtual DbSet<ProjectRole> ProjectRoles { get; set; }
+
+    public virtual DbSet<ProjectStatus> ProjectStatuses { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<WorkItem> WorkItems { get; set; }
+
+    public virtual DbSet<WorkItemAssignee> WorkItemAssignees { get; set; }
+
+    public virtual DbSet<WorkItemComment> WorkItemComments { get; set; }
+
+    public virtual DbSet<WorkItemPriority> WorkItemPriorities { get; set; }
+
+    public virtual DbSet<WorkItemStatus> WorkItemStatuses { get; set; }
 
     public virtual DbSet<Workspace> Workspaces { get; set; }
 
@@ -109,6 +127,124 @@ public partial class TeamSyncContext : DbContext
                 .HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Project>(entity =>
+        {
+            entity.Property(e => e.ArchivedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.Slug)
+                .IsRequired()
+                .HasMaxLength(120)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Visibility)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.ArchivedByUser).WithMany(p => p.ProjectArchivedByUsers)
+                .HasForeignKey(d => d.ArchivedByUserId)
+                .HasConstraintName("FK_Projects_ArchivedByUser");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.ProjectCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Projects_CreatedByUser");
+
+            entity.HasOne(d => d.DeletedByUser).WithMany(p => p.ProjectDeletedByUsers)
+                .HasForeignKey(d => d.DeletedByUserId)
+                .HasConstraintName("FK_Projects_DeletedByUser");
+
+            entity.HasOne(d => d.OwnerUser).WithMany(p => p.ProjectOwnerUsers)
+                .HasForeignKey(d => d.OwnerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Projects_OwnerUser");
+
+            entity.HasOne(d => d.ProjectStatus).WithMany(p => p.Projects)
+                .HasForeignKey(d => d.ProjectStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Projects_ProjectStatuses");
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.ProjectUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .HasConstraintName("FK_Projects_UpdatedByUser");
+
+            entity.HasOne(d => d.Workspace).WithMany(p => p.Projects)
+                .HasForeignKey(d => d.WorkspaceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Projects_Workspaces");
+        });
+
+        modelBuilder.Entity<ProjectMember>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.ProjectId }, "IX_ProjectMembers_User_Project");
+
+            entity.HasIndex(e => new { e.ProjectId, e.UserId }, "UQ_ProjectMembers_Project_User").IsUnique();
+
+            entity.Property(e => e.JoinedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.AddedByUser).WithMany(p => p.ProjectMemberAddedByUsers)
+                .HasForeignKey(d => d.AddedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProjectMembers_AddedByUser");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectMembers)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProjectMembers_Projects");
+
+            entity.HasOne(d => d.ProjectRole).WithMany(p => p.ProjectMembers)
+                .HasForeignKey(d => d.ProjectRoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProjectMembers_ProjectRoles");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ProjectMemberUsers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProjectMembers_Users");
+        });
+
+        modelBuilder.Entity<ProjectRole>(entity =>
+        {
+            entity.HasIndex(e => e.RoleName, "UQ_ProjectRoles_RoleName").IsUnique();
+
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<ProjectStatus>(entity =>
+        {
+            entity.HasIndex(e => e.Name, "UQ_ProjectStatuses_Name").IsUnique();
+
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.ColorHex)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C81D9518C");
@@ -131,6 +267,135 @@ public partial class TeamSyncContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(300);
             entity.Property(e => e.PasswordResetToken).HasMaxLength(200);
             entity.Property(e => e.ProfilePhoto).HasMaxLength(400);
+        });
+
+        modelBuilder.Entity<WorkItem>(entity =>
+        {
+            entity.HasIndex(e => e.ParentWorkItemId, "IX_WorkItems_ParentWorkItemId").HasFilter("([ParentWorkItemId] IS NOT NULL AND [IsDeleted]=(0))");
+
+            entity.HasIndex(e => new { e.ProjectId, e.WorkItemStatusId, e.SortOrder }, "IX_WorkItems_ProjectId_Status_SortOrder").HasFilter("([IsDeleted]=(0))");
+
+            entity.HasIndex(e => new { e.ProjectId, e.ItemNumber }, "UQ_WorkItems_ProjectId_ItemNumber").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.LastActivityAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.RowVersion)
+                .IsRequired()
+                .IsRowVersion()
+                .IsConcurrencyToken();
+            entity.Property(e => e.SortOrder)
+                .HasDefaultValue(1000.000000m)
+                .HasColumnType("decimal(18, 6)");
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.WorkItemCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItems_CreatedByUser");
+
+            entity.HasOne(d => d.DeletedByUser).WithMany(p => p.WorkItemDeletedByUsers)
+                .HasForeignKey(d => d.DeletedByUserId)
+                .HasConstraintName("FK_WorkItems_DeletedByUser");
+
+            entity.HasOne(d => d.ParentWorkItem).WithMany(p => p.InverseParentWorkItem)
+                .HasForeignKey(d => d.ParentWorkItemId)
+                .HasConstraintName("FK_WorkItems_Parent");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.WorkItems)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItems_Projects");
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.WorkItemUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .HasConstraintName("FK_WorkItems_UpdatedByUser");
+
+            entity.HasOne(d => d.WorkItemPriority).WithMany(p => p.WorkItems)
+                .HasForeignKey(d => d.WorkItemPriorityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItems_Priority");
+
+            entity.HasOne(d => d.WorkItemStatus).WithMany(p => p.WorkItems)
+                .HasForeignKey(d => d.WorkItemStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItems_Status");
+        });
+
+        modelBuilder.Entity<WorkItemAssignee>(entity =>
+        {
+            entity.HasKey(e => new { e.WorkItemId, e.UserId });
+
+            entity.HasIndex(e => e.UserId, "IX_WorkItemAssignees_UserId");
+
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.AssignedByUser).WithMany(p => p.WorkItemAssigneeAssignedByUsers)
+                .HasForeignKey(d => d.AssignedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItemAssignees_AssignedByUser");
+
+            entity.HasOne(d => d.User).WithMany(p => p.WorkItemAssigneeUsers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItemAssignees_Users");
+
+            entity.HasOne(d => d.WorkItem).WithMany(p => p.WorkItemAssignees)
+                .HasForeignKey(d => d.WorkItemId)
+                .HasConstraintName("FK_WorkItemAssignees_WorkItems");
+        });
+
+        modelBuilder.Entity<WorkItemComment>(entity =>
+        {
+            entity.HasKey(e => e.CommentId);
+
+            entity.HasIndex(e => new { e.WorkItemId, e.CreatedAt }, "IX_WorkItemComments_WorkItemId_CreatedAt").HasFilter("([IsDeleted]=(0))");
+
+            entity.Property(e => e.Content).IsRequired();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.WorkItemComments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WorkItemComments_Users");
+
+            entity.HasOne(d => d.WorkItem).WithMany(p => p.WorkItemComments)
+                .HasForeignKey(d => d.WorkItemId)
+                .HasConstraintName("FK_WorkItemComments_WorkItems");
+        });
+
+        modelBuilder.Entity<WorkItemPriority>(entity =>
+        {
+            entity.HasIndex(e => e.Name, "UQ_WorkItemPriorities_Name").IsUnique();
+
+            entity.Property(e => e.ColorHex)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false)
+                .HasDefaultValue("#6B7280");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<WorkItemStatus>(entity =>
+        {
+            entity.HasIndex(e => e.Name, "UQ_WorkItemStatuses_Name").IsUnique();
+
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.ColorHex)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false)
+                .HasDefaultValue("#6B7280");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         modelBuilder.Entity<Workspace>(entity =>
